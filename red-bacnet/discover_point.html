@@ -1,0 +1,108 @@
+<script type="text/javascript">
+    RED.nodes.registerType('discover point', {
+        category: 'redbacnet',
+        color: '#b5e6ff',
+        defaults: {
+            name: { value: "" },
+            client: { type: "bacnet client", required: true },
+            discoverMode: { value: 0, required: true, validate: RED.validators.number() },
+            readMethod: { value: 2, required: true, validate: RED.validators.number() },
+            groupExportDeviceCount: { value: 30000, required: true, validate: RED.validators.number() },
+            maxConcurrentDeviceRead: { value: 3, required: true, validate: RED.validators.number() },
+            maxConcurrentSinglePointRead: { value: 10, required: true, validate: RED.validators.number() },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "hal-systems.png",
+
+        label: function () {
+            return this.name || "discover point";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="discover point">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-client"><i class="fa fa-tag"></i> Client</label>
+        <input type="text" id="node-input-client">
+    </div>
+    <div class="form-row">
+        <label for="node-input-discoverMode"><i class="fa fa-list"></i> Discover Mode</label>
+        <select id="node-input-discoverMode">
+            <option value="0">Supported Objects Only</option>
+            <option value="1">All Objects</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-readMethod"><i class="fa fa-list"></i> Read Method</label>
+        <select id="node-input-readMethod">
+            <option value="0">Read Single Only</option>
+            <option value="1">Read Multiple Fallback Single</option>
+            <option value="2">Comprehensive Read</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-groupExportDeviceCount"><i class="fa fa-tag"></i> Group Export Device Count</label>
+        <input type="number" id="node-input-groupExportDeviceCount" placeholder="50", min="10", max="1000">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxConcurrentDeviceRead"><i class="fa fa-tag"></i> Max Concurrent Device Read</label>
+        <input type="number" id="node-input-maxConcurrentDeviceRead" placeholder="3" , min="1" , max="1000">
+    </div>
+    <div class="form-row">
+        <label for="node-input-maxConcurrentSinglePointRead"><i class="fa fa-tag"></i> Max Concurrent Single Point Read</label>
+        <input type="number" id="node-input-maxConcurrentSinglePointRead" placeholder="10" , min="1" , max="1000">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="discover point">
+    <p>Discover BACnet points</p>
+
+    <h3>Config</h3>
+        <dl class="message-properties">
+        <dt>client<span class="property-type">string</span></dt>
+        <dd> BACnet Client</dd>
+
+        <dt>discoverMode<span class="property-type">number</span></dt>
+        <dd> <b>Supported Objects Only</b>: AI, AO, AV, BI, BO, BV, MSI, MSO, MSV</dd>
+        <dd> <b>All Objects</b>: All object types</dd>
+
+        <dt>readMethod<span class="property-type">number</span></dt>
+        <dd> <b>Read Single Only</b>: use <code>readProperty</code></dd>
+        <dd> <b>Read Multiple Fallback Single</b>: try <code>readPropertyMultiple</code> with consevative query size, fallback to <code>readProperty</code> if failed</dd>
+        <dd> <b>Comprehensive Read</b>: try <code>readPropertyMultiple</code> twice with high and conservative query size, fallback to <code>readProperty</code> if failed</dd>
+
+        <dt>groupExportDeviceCount<span class="property-type">number</span></dt>
+        <dd> Emit <code>msg.payload</code> once discovered devices count reaches this limit</dd>
+
+        <dt>maxConcurrentDeviceRead<span class="property-type">number</span></dt>
+        <dd> Devices count to discover simultaneously.</dd>
+        <dd> <b> USE WITH CAUTION!</b> Reduce to low value on a slow network</dd>
+
+        <dt>maxConcurrentSinglePointRead<span class="property-type">number</span></dt>
+        <dd> Number of points to read simultaneously when using <code>readProperty</code> mode</dd>
+        <dd> <b>USE WITH CAUTION!</b> Reduce to low value if field BACnet device is underpowered</dd>
+        </dl>
+
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt>msg.devices <span class="property-type">array</span></dt>
+                <dd> A list of devices generated from discover device node (modify values if required)</dd>
+            <dt class="optional">msg.id <span class="property-type">string | number</span></dt>
+                <dd> Job ID. Default to <code>task</code> if not provided.</dd>
+        </dl>
+
+    <h3>Outputs</h3>
+        <dl class="message-properties">
+            <dt>msg.payload <span class="property-type">array</span></dt>
+                <dd>Discovered Points.</dd>
+        </dl>
+
+    <h3>Details</h3>
+        <p>If node is triggered while existing job is running, new job will be coalesced if <code>msg.id</code> are identical, else new job will be put in queue until current job is completed.</p>
+
+</script>

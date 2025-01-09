@@ -1,0 +1,100 @@
+<script type="text/javascript">
+    RED.nodes.registerType('discover device', {
+        category: 'redbacnet',
+        color: '#b5e6ff',
+        defaults: {
+            name: { value: "" },
+            client: { type: "bacnet client", required: true },
+            network: { value: 65535, required: true, validate: RED.validators.number() },
+            lowLimit: { value: 0, required: true, validate: RED.validators.number() },
+            highLimit: { value: 4194304, required: true, validate: RED.validators.number() },
+            whoIsTimeout: { value: 3000, required: true, validate: RED.validators.number() },
+            readDeviceTimeout: { value: 1000, required: true, validate: RED.validators.number() },
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "hal-systems.png",
+
+        label: function () {
+            return this.name || "discover device";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="discover device">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-client"><i class="fa fa-tag"></i> Client</label>
+        <input type="text" id="node-input-client">
+    </div>
+    <div class="form-row">
+        <label for="node-input-network"><i class="fa fa-tag"></i> Network</label>
+        <input type="number" id="node-input-network" placeholder="65535", min="1", max="65535">
+    </div>
+    <div class="form-row">
+        <label for="node-input-lowLimit"><i class="fa fa-tag"></i> Low Limit</label>
+        <input type="number" id="node-input-lowLimit" placeholder="0", min="0" , max="4194304">
+    </div>
+    <div class="form-row">
+        <label for="node-input-highLimit"><i class="fa fa-tag"></i> High Limit</label>
+        <input type="number" id="node-input-highLimit" placeholder="4194304", min="0" , max="4194304">
+    </div>
+    <div class="form-row">
+        <label for="node-input-whoIsTimeout"><i class="fa fa-tag"></i> Who Is Timeout (ms)</label>
+        <input type="number" id="node-input-whoIsTimeout" placeholder="3000", min="100", max="3600000">
+    </div>
+    <div class="form-row">
+        <label for="node-input-readDeviceTimeout"><i class="fa fa-tag"></i> Read Device Timeout (ms)</label>
+        <input type="number" id="node-input-readDeviceTimeout" placeholder="1000", min="100", max="3600000">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="discover device">
+    <p>Discover BACnet devices.</p>
+
+    <h3>Config</h3>
+        <dl class="message-properties">
+            <dt>client<span class="property-type">string</span></dt>
+            <dd> BACnet Client.</dd>
+
+            <dt>network<span class="property-type">number</span></dt>
+            <dd> BACnet network number. 1-65535.</dd>
+            <dd> Set to <code>65535</code> to discover all BACnet networks.</dd>
+
+            <dt>lowLimit<span class="property-type">number</span></dt>
+            <dd> Device ID low limit. 0-4194304.</dd>
+
+            <dt>highLimit<span class="property-type">number</span></dt>
+            <dd> Device ID high limit. 0-4194304.</dd>
+
+            <dt>whoIsTimeout<span class="property-type">number</span></dt>
+            <dd> Timeout in milliseconds</dd>
+
+            <dt>readDeviceTimeout<span class="property-type">number</span></dt>
+            <dd> The timeout in milliseconds</dd>
+        </dl>
+
+    <h3>Inputs</h3>
+        <dl class="message-properties">
+            <dt class="optional">msg.network <span class="property-type">number</span></dt>
+            <dd>Default config will be used if not configured.</dd>
+
+            <dt class="optional">msg.lowLimit <span class="property-type">number</span></dt>
+            <dd>Default config will be used if not configured.</dd>
+
+            <dt class="optional">msg.highLimit <span class="property-type">number</span></dt>
+            <dd>Default config will be used if not configured.</dd>
+        </dl>
+
+    <h3>Outputs</h3>
+        <dl class="message-properties">
+            <dt>msg.payload <span class="property-type">array</span></dt>
+            <dd>Discovered devices.</dd>
+        </dl>
+
+    <h3>Details</h3>
+        <p>If node is triggered while existing job is running, new job will be coalesced.</p>
+</script>

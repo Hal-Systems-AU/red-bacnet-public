@@ -1,0 +1,6 @@
+coverage/
+htmlcov/
+node_modules/
+script/
+template/
+tests/

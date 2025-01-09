@@ -1,0 +1,65 @@
+{
+  "name": "@halsystems/red-bacnet",
+  "version": "1.0.17",
+  "description": "NodeRED BACnet IP client",
+  "email": "open_source@halsystems.com.au",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hal-Systems-AU/red-bacnet-public"
+  },
+  "scripts": {
+    "play": "node script/play.js",
+    "test": "jest --coverage --coverageDirectory='htmlcov' --runInBand",
+    "tests": "jest --coverage --coverageDirectory='htmlcov' --collectCoverageFrom='common/**/*' --runInBand"
+  },
+  "keywords": [
+    "node-red",
+    "bacnet",
+    "bms",
+    "iot",
+    "building-automation"
+  ],
+  "author": "Hal Systems",
+  "license": "MIT",
+  "node-red": {
+    "version": ">=3.0.0",
+    "nodes": {
+      "bacnet client": "red-bacnet/bacnet_client.js",
+      "discover device": "red-bacnet/discover_device.js",
+      "discover point": "red-bacnet/discover_point.js",
+      "read point": "red-bacnet/read_point.js",
+      "write point": "red-bacnet/write_point.js"
+    }
+  },
+  "dependencies": {
+    "debug": "^4.3.7",
+    "iconv-lite": "^0.6.3",
+    "joi": "^17.13.3",
+    "module-alias": "^2.2.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/node": "^22.10.2",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
+    "jest": "^29.7.0",
+    "lodash": "^4.17.21"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "^@root/(.*)$": "<rootDir>/$1",
+      "^@tests/(.*)$": "<rootDir>/tests/$1"
+    },
+    "modulePathIgnorePatterns": [
+      "<rootDir>/template/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/ext/",
+      "<rootDir>/tests/"
+    ],
+    "globalSetup": "<rootDir>/tests/_test_lib/global_setup.js",
+    "globalTeardown": "<rootDir>/tests/_test_lib/global_teardown.js",
+    "testEnvironment": "node",
+    "testSequencer": "<rootDir>/tests/_test_lib/test_sequencer.js"
+  }
+}

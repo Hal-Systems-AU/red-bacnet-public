@@ -1,0 +1,60 @@
+<script type="text/javascript">
+    RED.nodes.registerType('bacnet client', {
+        category: 'config',
+        defaults: {
+            name: { value: '', required: true },
+            interface: { value: '0.0.0.0' },
+            port: { value: 47808, validate: RED.validators.number() },
+            broadcastAddress: { value: '', required: true },
+            apduTimeout: { value: 6000, validate: RED.validators.number() }
+
+        },
+        label: function () {
+            return this.name || "BACnet Client";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="bacnet client">
+    <div class="form-row">
+        <label for="node-config-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-config-input-name" placeholder="BACnet Client">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-interface"><i class="fa fa-tag"></i> Interface</label>
+        <input type="text" id="node-config-input-interface" placeholder="0.0.0.0">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-port"><i class="fa fa-tag"></i> Port</label>
+        <input type="number" id="node-config-input-port" placeholder="47808">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-broadcastAddress"><i class="fa fa-tag"></i> Broadcast Address</label>
+        <input type="text" id="node-config-input-broadcastAddress" placeholder="192.168.1.255">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-apduTimeout"><i class="fa fa-tag"></i> APDU Timeout</label>
+        <input type="number" id="node-config-input-apduTimeout" placeholder="6000">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="bacnet client">
+    <p>BACnet client configuration.</p>
+    <h3>Config</h3>
+        <dl class="message-properties">
+            <dt>interface<span class="property-type">string</span></dt>
+            <dd> Network interface to bind to.</dd>
+            <dd> Eg: 0.0.0.0 / 192.168.1.100</dd>
+
+            <dt>port<span class="property-type">number</span></dt>
+            <dd> BACnet port.</dd>
+
+            <dt>broadcastAddress<span class="property-type">string</span></dt>
+            <dd> Broadcast address to use.</dd>
+            <dd> Subnet broadcast. Eg: 192.168.1.255</dd>
+            <dd> Global broadcast. Eg: 255.255.255.255</dd>
+
+            <dt>apduTimeout<span class="property-type">number</span></dt>
+            <dd> Timeout in milliseconds.</dd>
+        </dl>
+</script>

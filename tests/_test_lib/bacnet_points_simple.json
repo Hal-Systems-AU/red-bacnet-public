@@ -1,0 +1,189 @@
+[
+  {
+    "deviceName": "BacServer",
+    "pointName": "Analog Input 0",
+    "bacType": 0,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 18.6,
+    "valueType": 4,
+    "facets": "unit:°C;precision:1",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Analog Output 0",
+    "bacType": 1,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 53.2,
+    "valueType": 4,
+    "facets": "unit:L/s;precision:1",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Analog Output 1",
+    "bacType": 1,
+    "bacInstance": 1,
+    "bacProp": 85,
+    "value": 29.5,
+    "valueType": 4,
+    "facets": "unit:L/s;precision:1",
+    "priority": 10
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Analog Value 0",
+    "bacType": 2,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": -2266.1,
+    "valueType": 4,
+    "facets": "precision:1",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Analog Value 1",
+    "bacType": 2,
+    "bacInstance": 1,
+    "bacProp": 85,
+    "value": -2185.3,
+    "valueType": 4,
+    "facets": "precision:1",
+    "priority": 10
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Binary Input 0",
+    "bacType": 3,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 9,
+    "facets": "falseText:Off;trueText:On",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Binary Output 0",
+    "bacType": 4,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 9,
+    "facets": "falseText:Disabled;trueText:Enabled",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Binary Output 1",
+    "bacType": 4,
+    "bacInstance": 1,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 9,
+    "facets": "falseText:Disabled;trueText:Enabled",
+    "priority": 10
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Binary Value 0",
+    "bacType": 5,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 9,
+    "facets": "falseText:false;trueText:true",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Binary Value 1",
+    "bacType": 5,
+    "bacInstance": 1,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 9,
+    "facets": "falseText:false;trueText:true",
+    "priority": 10
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Multi State Input 0",
+    "bacType": 13,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 2,
+    "valueType": 2,
+    "facets": "range:{1:Auto;2:Off;3:On}",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Multi State Output 0",
+    "bacType": 14,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 2,
+    "valueType": 2,
+    "facets": "range:{1:Auto;2:Off;3:On}",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Multi State Output 1",
+    "bacType": 14,
+    "bacInstance": 1,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 2,
+    "facets": "range:{1:Auto;2:Off;3:On}",
+    "priority": 10
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Multi State Value 0",
+    "bacType": 19,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 3,
+    "valueType": 2,
+    "facets": "range:{1:Auto;2:Off;3:On}",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Multi State Value 1",
+    "bacType": 19,
+    "bacInstance": 1,
+    "bacProp": 85,
+    "value": 1,
+    "valueType": 2,
+    "facets": "range:{1:Auto;2:Off;3:On}",
+    "priority": 10
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Proprietary Input 0",
+    "bacType": 130,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 69.9,
+    "valueType": 4,
+    "facets": "",
+    "priority": 0
+  },
+  {
+    "deviceName": "BacServer",
+    "pointName": "Proprietary Output 0",
+    "bacType": 138,
+    "bacInstance": 0,
+    "bacProp": 85,
+    "value": 29.8,
+    "valueType": 4,
+    "facets": "",
+    "priority": 10
+  }
+]
