@@ -207,7 +207,9 @@ module.exports = {
 
                 if (Array.isArray(data.result))
                     data.result.forEach(i => {
-                        points[`${data.id}_${i.objectId.type}_${i.objectId.instance}_${i.values[0].id}`] = i.values?.[0]?.value?.[0]?.value;
+                        i.values.forEach(v => {
+                            points[`${data.id}_${i.objectId.type}_${i.objectId.instance}_${v.id}`] = v.value?.[0]?.value;
+                        });
                     });
 
                 count++;
@@ -231,6 +233,10 @@ module.exports = {
                 // var
                 let value = points[key];
                 let err = null
+
+                // process
+                if (typeof value === 'boolean')
+                    value = value ? 1 : 0
 
                 if (value == null || value?.errorClass != null || value?.errorCode != null) {
                     value = 0
