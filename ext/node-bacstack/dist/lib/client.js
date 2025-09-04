@@ -1428,7 +1428,7 @@ class Client extends events_1.EventEmitter {
         if (receiver && receiver.forwardedFrom) {
             // Remote node address given, forward to BBMD
             baBvlc.encode(buffer.buffer, baEnum.BvlcResultPurpose.FORWARDED_NPDU, buffer.offset, receiver.forwardedFrom);
-        } else if (receiver && receiver.address) {
+        } else if (receiver && receiver.address || (receiver && receiver.ip)) {
             // Specific address, unicast
             baBvlc.encode(buffer.buffer, baEnum.BvlcResultPurpose.ORIGINAL_UNICAST_NPDU, buffer.offset);
         } else {
@@ -1438,7 +1438,7 @@ class Client extends events_1.EventEmitter {
         this._transport.send(
             buffer.buffer,
             buffer.offset,
-            (receiver && receiver.address) || null
+            (receiver && receiver.address) || (receiver && receiver.ip) || null
         );
     }
     /**
