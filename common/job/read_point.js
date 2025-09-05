@@ -247,7 +247,7 @@ module.exports = {
 
                 // format point
                 const facetObj = facetsStrToObj(p.facets);
-
+                console.log(value)
                 if (facetObj.trueText != null || facetObj.falseText != null) { // boolean
                     fvalue = fvalue ? facetObj.trueText : facetObj.falseText
                 } else if (facetObj.range != null) { // enum
@@ -256,6 +256,7 @@ module.exports = {
                     else
                         fvalue = String(fvalue)
                 } else { // general
+                    // handle number
                     if (typeof value === 'number') {
                         value = (facetObj.precision != null) ? +value.toFixed(facetObj.precision) : +value.toFixed(1)
                         fvalue = value

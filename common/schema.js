@@ -48,7 +48,10 @@ module.exports = {
     }),
 
     readPointSchema: Joi.object({
-        value: Joi.number().required(),
+        value: Joi.alternatives().try(
+            Joi.number(),
+            Joi.string()
+        ).required(),
         fvalue: Joi.string().allow('').required(),
         err: Joi.string().allow(''),
     }),

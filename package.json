@@ -1,6 +1,6 @@
 {
   "name": "@halsystems/red-bacnet",
-  "version": "1.0.21",
+  "version": "1.0.22",
   "description": "NodeRED BACnet IP client",
   "email": "open_source@halsystems.com.au",
   "repository": {
