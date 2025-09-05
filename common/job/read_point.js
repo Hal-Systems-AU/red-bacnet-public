@@ -247,7 +247,6 @@ module.exports = {
 
                 // format point
                 const facetObj = facetsStrToObj(p.facets);
-                console.log(value)
                 if (facetObj.trueText != null || facetObj.falseText != null) { // boolean
                     fvalue = fvalue ? facetObj.trueText : facetObj.falseText
                 } else if (facetObj.range != null) { // enum

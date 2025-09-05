@@ -2,6 +2,10 @@
 
 ## [1.0.22]
 ### Fixed
+- Removed console.log in Read Point
+
+## [1.0.22]
+### Fixed
 - Read Point supports string reading
 
 ## [1.0.21]

@@ -35,10 +35,14 @@ const multiStateObjectTypes = [
     baEnum.ObjectType.MULTI_STATE_OUTPUT,
     baEnum.ObjectType.MULTI_STATE_VALUE
 ]
+// const scheduleObjectTypes = [
+//     baEnum.ObjectType.SCHEDULE,
+// ];
 const supportedObjectTypes = [
     ...analogObjectTypes,
     ...binaryObjectTypes,
-    ...multiStateObjectTypes
+    ...multiStateObjectTypes,
+    // ...scheduleObjectTypes
 ]
 
 // ---------------------------------- export ----------------------------------
@@ -246,7 +250,12 @@ const readPoints = async (
                 { id: baEnum.PropertyIdentifier.INACTIVE_TEXT },
                 { id: baEnum.PropertyIdentifier.ACTIVE_TEXT }
             ] : []),
-            ...(multiStateObjectTypes.includes(obj.value.type) ? [{ id: baEnum.PropertyIdentifier.STATE_TEXT }] : [])
+            ...(multiStateObjectTypes.includes(obj.value.type) ? [{ id: baEnum.PropertyIdentifier.STATE_TEXT }] : []),
+            // ...(scheduleObjectTypes.includes(obj.value.type) ? [
+            //     { id: baEnum.PropertyIdentifier.WEEKLY_SCHEDULE },
+            //     { id: baEnum.PropertyIdentifier.EXCEPTION_SCHEDULE },
+            //     { id: baEnum.PropertyIdentifier.SCHEDULE_DEFAULT }
+            // ] : [])
         ]
     }));
 
@@ -254,6 +263,7 @@ const readPoints = async (
         const result = await smartReadProperty(
             client, device, reqArr, readMethod, maxConcurrentSinglePointRead, 50
         );
+        // console.log(JSON.stringify(result))
         result.forEach(i => {
             /** i example
                 {
