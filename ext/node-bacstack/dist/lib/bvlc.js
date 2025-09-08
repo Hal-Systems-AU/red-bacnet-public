@@ -12,8 +12,10 @@ const encode = (buffer, func, msgLength) => {
 exports.encode = encode;
 const decode = (buffer, offset) => {
     let len;
+    let linkAddress;
     const func = buffer[1];
     const msgLength = (buffer[2] << 8) | (buffer[3] << 0);
+
     if (buffer[0] !== baEnum.BVLL_TYPE_BACNET_IP || buffer.length !== msgLength)
         return;
     switch (func) {
@@ -25,6 +27,12 @@ const decode = (buffer, offset) => {
             break;
         case baEnum.BvlcResultPurpose.FORWARDED_NPDU:
             len = 10;
+            // HAL modified. Extract BVLC IP and port from buffer
+            if (buffer.length >= 10) {
+                const ip = [buffer[4], buffer[5], buffer[6], buffer[7]].join('.');
+                const port = (buffer[8] << 8) | buffer[9];
+                linkAddress = port === 47808 ? ip : `${ip}:${port}`;
+            }
             break;
         case baEnum.BvlcResultPurpose.REGISTER_FOREIGN_DEVICE:
         case baEnum.BvlcResultPurpose.READ_FOREIGN_DEVICE_TABLE:
@@ -41,7 +49,8 @@ const decode = (buffer, offset) => {
     return {
         len: len,
         func: func,
-        msgLength: msgLength
+        msgLength: msgLength,
+        linkAddress: linkAddress
     };
 };
 exports.decode = decode;

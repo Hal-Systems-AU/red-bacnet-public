@@ -458,6 +458,8 @@ class Client extends events_1.EventEmitter {
         this._handlePdu(remoteAddress, apduType, buffer, offset, msgLength, addressObject, destAddress);
     }
     _receiveData(buffer, remoteAddress) {
+        let srcAddress = remoteAddress
+
         // Check data length
         if (buffer.length < baEnum.BVLC_HEADER_LENGTH)
             return debug('Received invalid data -> Drop package');
@@ -465,9 +467,14 @@ class Client extends events_1.EventEmitter {
         const result = baBvlc.decode(buffer, 0);
         if (!result)
             return debug('Received invalid BVLC header -> Drop package');
-        // Check BVLC function
+        // Check BVLC virtual link controller address if defined
         if (result.func === baEnum.BvlcResultPurpose.ORIGINAL_UNICAST_NPDU || result.func === baEnum.BvlcResultPurpose.ORIGINAL_BROADCAST_NPDU || result.func === baEnum.BvlcResultPurpose.FORWARDED_NPDU) {
-            this._handleNpdu(buffer, result.len, buffer.length - result.len, remoteAddress);
+            // HAL modified. Use BACnet link address if exists
+            if (result.func === baEnum.BvlcResultPurpose.FORWARDED_NPDU && result.linkAddress) {
+                srcAddress = result.linkAddress
+            }
+
+            this._handleNpdu(buffer, result.len, buffer.length - result.len, srcAddress);
         }
         else {
             debug('Received unknown BVLC function -> Drop package');
