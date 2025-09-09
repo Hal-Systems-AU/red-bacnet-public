@@ -240,6 +240,8 @@ const readPoints = async (
     device, objects, eventEmitter, name, client, readMethod, maxConcurrentSinglePointRead
 ) => {
     const points = [];
+
+    // First query - get basic properties (excluding STATE_TEXT)
     const reqArr = objects.map(obj => ({
         objectId: { type: obj.value.type, instance: obj.value.instance },
         properties: [
@@ -250,36 +252,76 @@ const readPoints = async (
                 { id: baEnum.PropertyIdentifier.INACTIVE_TEXT },
                 { id: baEnum.PropertyIdentifier.ACTIVE_TEXT }
             ] : []),
-            ...(multiStateObjectTypes.includes(obj.value.type) ? [{ id: baEnum.PropertyIdentifier.STATE_TEXT }] : []),
-            // ...(scheduleObjectTypes.includes(obj.value.type) ? [
-            //     { id: baEnum.PropertyIdentifier.WEEKLY_SCHEDULE },
-            //     { id: baEnum.PropertyIdentifier.EXCEPTION_SCHEDULE },
-            //     { id: baEnum.PropertyIdentifier.SCHEDULE_DEFAULT }
-            // ] : [])
         ]
     }));
 
     try {
+        // First request - get basic properties
         const result = await smartReadProperty(
             client, device, reqArr, readMethod, maxConcurrentSinglePointRead, 50
         );
-        // console.log(JSON.stringify(result))
+
+        // Process basic properties first
         result.forEach(i => {
-            /** i example
-                {
-                    objectId: { type: 1, instance: 0 },
-                    values: [
-                        { id: 85, index: 4294967295, value: [Array] },
-                        { id: 77, index: 4294967295, value: [Array] }
-                    ]
-                }
-             */
             const point = processPoint(i, device.deviceName);
             points.push(point);
         });
-        return points
+
+        // Second query - get STATE_TEXT for multistate objects only
+        const multistateObjects = objects.filter(obj => multiStateObjectTypes.includes(obj.value.type));
+
+        if (multistateObjects.length > 0) {
+            const stateTextReqArr = multistateObjects.map(obj => ({
+                objectId: { type: obj.value.type, instance: obj.value.instance },
+                properties: [{ id: baEnum.PropertyIdentifier.STATE_TEXT }]
+            }));
+
+            try {
+                const stateTextResult = await smartReadProperty(
+                    client, device, stateTextReqArr, readMethod, maxConcurrentSinglePointRead, 50
+                );
+
+                // Update points with STATE_TEXT
+                stateTextResult.forEach(stateTextData => {
+                    const matchingPoint = points.find(point =>
+                        point.bacType === stateTextData.objectId.type &&
+                        point.bacInstance === stateTextData.objectId.instance
+                    );
+
+                    if (matchingPoint) {
+                        updatePointWithStateText(matchingPoint, stateTextData);
+                    }
+                });
+            } catch (stateTextError) {
+                // Log the error but don't fail the entire operation
+                eventEmitter.emit(EVENT_ERROR, errMsg(
+                    name,
+                    'Warning: Failed to read STATE_TEXT properties',
+                    stateTextError
+                ));
+            }
+        }
+
+        return points;
     } catch (error) {
         eventEmitter.emit(EVENT_ERROR, errMsg(name, ERR_READING_POINTS, error));
+    }
+};
+
+const updatePointWithStateText = (point, stateTextData) => {
+    const stateTextProp = stateTextData.values.find(prop => prop.id === baEnum.PropertyIdentifier.STATE_TEXT);
+    const states = stateTextProp?.value;
+
+    if (Array.isArray(states)) {
+        // Update the facets with state text information
+        const stateTextFacet = `range:{${states.map((item, index) => `${index + 1}:${item.value}`).join(';')}}`;
+
+        // If point already has facets, append; otherwise, set new facets
+        if (point.facets) {
+            point.facets += `;${stateTextFacet}`;
+        } else {
+            point.facets = stateTextFacet;
+        }
     }
 };
 
@@ -311,12 +353,8 @@ const setPointFacets = (point, i) => {
         const inactive = i.values.find(prop => prop.id === baEnum.PropertyIdentifier.INACTIVE_TEXT)?.value?.[0]?.value;
         const active = i.values.find(prop => prop.id === baEnum.PropertyIdentifier.ACTIVE_TEXT)?.value?.[0]?.value;
         point.facets = `falseText:${inactive ? inactive : 'false'};trueText:${active ? active : 'true'}`;
-    } else if (multiStateObjectTypes.includes(point.bacType)) {
-        const states = i.values.find(prop => prop.id === baEnum.PropertyIdentifier.STATE_TEXT)?.value;
-        if (Array.isArray(states)) {
-            point.facets = `range:{${states.map((item, index) => `${index + 1}:${item.value}`).join(';')}}`;
-        }
     }
+    // STATE_TEXT handling removed from here - now handled separately
 };
 
 const setPointValues = (point, i) => {

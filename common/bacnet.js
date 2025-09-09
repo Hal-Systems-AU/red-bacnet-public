@@ -112,6 +112,9 @@ module.exports = {
             let first = true
             let reqArrBatch
             let batchCount
+            let currBatchSize = batchSize
+            let retry = 0
+            let maxRetry = 5
 
             do { // use current batch size until query failed
                 // get ready for next batch
@@ -132,7 +135,7 @@ module.exports = {
                     if (reqArrIndexNext >= reqArr.length)
                         break
 
-                    if (batchCount + reqArr[reqArrIndexNext].properties.length > batchSize)
+                    if (batchCount + reqArr[reqArrIndexNext].properties.length > currBatchSize)
                         break
 
                     reqArrBatch.push(reqArr[reqArrIndexNext])
@@ -143,6 +146,16 @@ module.exports = {
                 // read batch block
                 const value = await module.exports.readPropertyMultple(client, device, reqArrBatch)
                     .catch(() => {
+                        retry++
+
+                        // Reduce batch size by half (minimum 1)
+                        currBatchSize = Math.max(1, Math.floor(currBatchSize / 2))
+
+                        // If we've exhausted retries or batch size is too small, mark as unhealthy
+                        if (retry > maxRetry || currBatchSize < 1) {
+                            healthy = false
+                        }
+
                         reqArrIndexNext = reqArrIndex
                         healthy = false
                     })

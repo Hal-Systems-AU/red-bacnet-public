@@ -29,9 +29,24 @@ const decode = (buffer, offset) => {
             len = 10;
             // HAL modified. Extract BVLC IP and port from buffer
             if (buffer.length >= 10) {
-                const ip = [buffer[4], buffer[5], buffer[6], buffer[7]].join('.');
+                const ipParts = [buffer[4], buffer[5], buffer[6], buffer[7]];
                 const port = (buffer[8] << 8) | buffer[9];
-                linkAddress = port === 47808 ? ip : `${ip}:${port}`;
+
+                // Validate IP octets (0–255 only)
+                const isValidIp = ipParts.every(octet => Number.isInteger(octet) && octet >= 0 && octet <= 255);
+
+                // Validate port (1–65535; BACnet default is 47808)
+                const isValidPort = Number.isInteger(port) && port > 0 && port <= 65535;
+
+                // Extra IP rules
+                const isBroadcast = ipParts.every(octet => octet === 255); // 255.255.255.255
+                const isMulticast = ipParts[0] >= 224 && ipParts[0] <= 239; // 224.0.0.0 – 239.255.255.255
+                const isZero = ipParts.every(octet => octet === 0); // 0.0.0.0
+
+                if (isValidIp && isValidPort && !isBroadcast && !isMulticast && !isZero) {
+                    const ip = ipParts.join(".");
+                    linkAddress = (port === 47808) ? ip : `${ip}:${port}`;
+                }
             }
             break;
         case baEnum.BvlcResultPurpose.REGISTER_FOREIGN_DEVICE:
