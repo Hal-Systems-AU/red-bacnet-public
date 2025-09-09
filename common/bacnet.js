@@ -18,7 +18,8 @@ const { getErrMsg } = require('@root/common/func.js')
 // ---------------------------------- export ----------------------------------
 module.exports = {
     /**
-     * Reads the object list of a device.
+     * Reads the object list of a device using optimized batch reading.
+     * First tries readPropertyMultiple for faster performance, falls back to sequential reading if failed.
      * @param {BacnetClient} client
      * @param {object} device
      *  eg:{
@@ -38,7 +39,91 @@ module.exports = {
     readObjectList: async function (client, device) {
         const objectId = { type: baEnum.ObjectType.DEVICE, instance: device.deviceId };
         const propertyId = baEnum.PropertyIdentifier.OBJECT_LIST;
-        return await module.exports.readPropertyReturnArr(client, device, objectId, propertyId);
+
+        let result = await module.exports.readPropertyMultipleReturnArr(client, device, objectId, propertyId);
+        if (result.length == 0) {
+            result = await module.exports.readPropertyReturnArr(client, device, objectId, propertyId);
+        }
+
+        return result;
+    },
+
+    /**
+     * Reads a property that returns an array using readPropertyMultiple for better performance.
+     * Attempts to read the property in batches to minimize round trips.
+     * @param {BacnetClient} client
+     * @param {object} device
+     * @param {object} objectId
+     * @param {number} propertyId
+     * @returns array of objects
+     * @async
+     */
+    readPropertyMultipleReturnArr: async function (client, device, objectId, propertyId) {
+        let addressSet = device.ipAddress;
+        if (device.macAddress != null && device.network != null) {
+            addressSet = {
+                ip: device.ipAddress,
+                adr: device.macAddress,
+                net: device.network
+            };
+        }
+
+        const result = [];
+        let healthy = true;
+
+        // helper for single batch request
+        async function readBatch(arrayIndex) {
+            const reqArr = [{
+                objectId: objectId,
+                properties: [{
+                    id: propertyId,
+                    index: arrayIndex != null ? arrayIndex : baEnum.ASN1_ARRAY_ALL
+                }]
+            }];
+
+            return new Promise((resolve, reject) => {
+                client.readPropertyMultiple(
+                    addressSet,
+                    reqArr,
+                    { maxApdu: device.maxApdu },
+                    (err, value) => {
+                        if (err) return reject(err);
+                        resolve(value);
+                    }
+                );
+            });
+        }
+
+        // try reading all at once first
+        try {
+            const value = await readBatch(baEnum.ASN1_ARRAY_ALL);
+            if (value?.values?.[0]?.values?.[0]?.value) {
+                return value.values[0].values[0].value;
+            }
+        } catch (err) {
+            void err
+            healthy = false;
+        }
+
+        // try using index read
+        if (!healthy) {
+            for (let i = 0; ; i++) {
+                try {
+                    const res = await readBatch(i);
+                    const item = res?.values?.[0]?.values?.[0]?.value?.[0];
+
+                    if (item?.type === 105) break
+
+                    result.push(item);
+                    console.log(item)
+                } catch (err) {
+                    void err
+                    break;
+                }
+            }
+        }
+
+        return result;
     },
 
     /**
@@ -95,9 +180,9 @@ module.exports = {
         if (readMethod > 0) {
             // calculate batch sizes
             if (device.maxApdu == null) // default batch size if null or undefined
-                batchSizes.add(20).add(5);
+                batchSizes.add(20);
             else {
-                const perValueBytes = [30, 50] // typical numeric point is 17 byte
+                const perValueBytes = [30] // typical numeric point is 17 byte
                 for (let x = 0; x < perValueBytes.length; x++)
                     batchSizes.add(Math.trunc(device.maxApdu / perValueBytes[x]))
             }
@@ -113,8 +198,6 @@ module.exports = {
             let reqArrBatch
             let batchCount
             let currBatchSize = batchSize
-            let retry = 0
-            let maxRetry = 5
 
             do { // use current batch size until query failed
                 // get ready for next batch
@@ -146,13 +229,11 @@ module.exports = {
                 // read batch block
                 const value = await module.exports.readPropertyMultple(client, device, reqArrBatch)
                     .catch(() => {
-                        retry++
-
                         // Reduce batch size by half (minimum 1)
                         currBatchSize = Math.max(1, Math.floor(currBatchSize / 2))
 
-                        // If we've exhausted retries or batch size is too small, mark as unhealthy
-                        if (retry > maxRetry || currBatchSize < 1) {
+                        // If batch size is too small, mark as unhealthy
+                        if (currBatchSize <= 1) {
                             healthy = false
                         }
 
@@ -330,7 +411,7 @@ module.exports = {
      *  eg: 85
      * @returns object
      *  eg: { len: 11, objectId: { type: 19, instance: 1 },
-     *      property: { id: 85, index: 4294967295 }, values: [ { type: 2, value: 3 } ]}
+     *      property: { id: 85, index: 4294967295 }, values: [ { type: 2, value: 3 }]}
      * @async
      */
     readProperty: async function (client, device, objectId, propertyId) {
