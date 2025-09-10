@@ -31,10 +31,9 @@ module.exports = {
          * @param {number} lowLimit - Low limit of the network range.
          * @param {number} highLimit - High limit of the network range.
          * @param {number} whoIsTimeout - Who is request timeout in milliseconds.
-         * @param {number} readDeviceNameTimeout - Read device name timeout in milliseconds.
          */
         constructor(
-            client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout, readDeviceNameTimeout,
+            client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout,
             name = 'discover device'
         ) {
             super();
@@ -44,7 +43,6 @@ module.exports = {
             this.lowLimit = lowLimit
             this.highLimit = highLimit
             this.whoIsTimeout = whoIsTimeout
-            this.readDeviceNameTimeout = readDeviceNameTimeout
             this.name = name
         }
 
@@ -108,7 +106,6 @@ module.exports = {
          * @returns {Promise<void>}
          */
         async #readDevices() {
-            const chunkSize = 100;
             const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
             const readDeviceName = (d, addressSet) => {
@@ -138,26 +135,22 @@ module.exports = {
                 });
             };
 
-            for (let i = 0; i < this.discoverList.length; i += chunkSize) {
-                const chunk = this.discoverList.slice(i, i + chunkSize);
+            for (let i = 0; i < this.discoverList.length; i++) {
+                const d = this.discoverList[i];
 
-                const promises = chunk.map(d => {
-                    let addressSet = d.address;
-                    if (d.adr !== undefined && d.net !== undefined) {
-                        addressSet = { ip: d.address, adr: d.adr, net: d.net };
-                    }
+                let addressSet = d.address;
+                if (d.adr !== undefined && d.net !== undefined) {
+                    addressSet = { ip: d.address, adr: d.adr, net: d.net };
+                }
 
-                    return readDeviceName(d, addressSet)
-                        .then(deviceInfo => this.discoveredDevices.push(deviceInfo));
-                });
+                const deviceInfo = await readDeviceName(d, addressSet);
+                this.discoveredDevices.push(deviceInfo);
 
-                await Promise.allSettled(promises);
-                await delay(this.readDeviceNameTimeout);
-
-                // update progress
+                // throttle to avoid bursts
+                await delay(75); // tweak between 50–150ms
                 this.#updateProgress(
-                    Math.min(90, Math.round((80 / this.discoverList.length) * (i + chunkSize) + 10))
-                )
+                    Math.min(90, Math.round((80 / this.discoverList.length) * (i + 1) + 10))
+                );
             }
 
             this.#updateProgress(90)

@@ -9,7 +9,6 @@
             lowLimit: { value: 0, required: true, validate: RED.validators.number() },
             highLimit: { value: 4194304, required: true, validate: RED.validators.number() },
             whoIsTimeout: { value: 3000, required: true, validate: RED.validators.number() },
-            readDeviceTimeout: { value: 1000, required: true, validate: RED.validators.number() },
         },
         inputs: 1,
         outputs: 1,
@@ -45,10 +44,6 @@
     <div class="form-row">
         <label for="node-input-whoIsTimeout"><i class="fa fa-tag"></i> Who Is Timeout (ms)</label>
         <input type="number" id="node-input-whoIsTimeout" placeholder="3000", min="100", max="3600000">
-    </div>
-    <div class="form-row">
-        <label for="node-input-readDeviceTimeout"><i class="fa fa-tag"></i> Read Device Timeout (ms)</label>
-        <input type="number" id="node-input-readDeviceTimeout" placeholder="1000", min="100", max="3600000">
     </div>
 </script>
 

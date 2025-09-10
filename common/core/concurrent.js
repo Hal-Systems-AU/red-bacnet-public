@@ -2,6 +2,7 @@
 require('./_alias.js');
 
 const { EVENT_OUTPUT, EVENT_ERROR } = require('@root/common/core/constant.js');
+const { delay } = require('@root/common/core/util.js');
 
 // ---------------------------------- type def ----------------------------------
 /**
@@ -43,8 +44,7 @@ module.exports = {
                 await Promise.race(executing);
             }
 
-            // need delay?
-            // if (typeof delay === 'function') await delay(1);
+            await delay(50)
         }
 
         await Promise.allSettled(executing);

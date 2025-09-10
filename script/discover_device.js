@@ -18,10 +18,9 @@ const {
 const network = 65535;
 const lowLimit = 0
 const highLimit = 4194304
-const whoIsTimeout = 2000; // 30000
-const readDeviceNameTimeout = 1000 // 10000
+const whoIsTimeout = 10000; // 30000
 const config = {
-    apduTimeout: 2000,
+    apduTimeout: 6000,
     interface: '0.0.0.0',
     port: 47808,
     broadcastAddress: '192.168.68.255',
@@ -43,12 +42,18 @@ const output = path.join(outputFolder, 'devices.json');
 
 // ---------------------------------- main function ----------------------------------
 async function main() {
+    const start = performance.now();
+
     const discoverDeviceJob = new DiscoverDeviceJob(
-        client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout, readDeviceNameTimeout
+        client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout
     );
     await discoverDeviceJob.onStart();
     await discoverDeviceJob.execute();
     await discoverDeviceJob.onStop();
+
+    const end = performance.now();
+    const exeTime = calExeTime(start, end);
+    print(`completed in ${exeTime}`);
 
     client.close();
 }
@@ -74,6 +79,14 @@ eventEmitter.on(EVENT_UPDATE_STATUS, (msg) => {
 eventEmitter.on(EVENT_ERROR, (err) => {
     print(`error: ${JSON.stringify(err)}`);
 });
+
+// ---------------------------------- functions ----------------------------------
+function calExeTime(startTime, endTime) {
+    const totalSeconds = (endTime - startTime) / 1000;
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = (totalSeconds % 60).toFixed(3);
+    return `${minutes}m ${seconds}s`;
+}
 
 // ---------------------------------- main ----------------------------------
 main();

@@ -28,7 +28,6 @@ module.exports = function (RED) {
             this.lowLimit = +config.lowLimit
             this.highLimit = +config.highLimit
             this.whoIsTimeout = +config.whoIsTimeout
-            this.readDeviceTimeout = +config.readDeviceTimeout
 
             // events
             this.#subscribeListeners();
@@ -45,7 +44,6 @@ module.exports = function (RED) {
                 this.lowLimit,
                 this.highLimit,
                 this.whoIsTimeout,
-                this.readDeviceTimeout
             );
             this.task.onStart();
         }

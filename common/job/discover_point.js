@@ -277,8 +277,9 @@ const readPoints = async (
             }));
 
             try {
+                // Force use single read on state text to reduce loss especially long text
                 const stateTextResult = await smartReadProperty(
-                    client, device, stateTextReqArr, readMethod, maxConcurrentSinglePointRead, 50
+                    client, device, stateTextReqArr, 0, 1, 50
                 );
 
                 // Update points with STATE_TEXT

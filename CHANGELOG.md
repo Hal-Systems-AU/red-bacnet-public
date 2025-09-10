@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.0]
+### Changed
+- Implemented auto resize batch size when querying using readPropertyMultiple to improve performance
+- Added readPropertyMultiple to read object list to reduce query speed
+- Changed strategy when discovering device name, implemented delay instead of burst to reduce traffic congestion and yield better result
+- Force use readProperty to read multistate object to improve result
+
+### Fixed
+- Failure to discover device name for Forwarded NPDU devices
+- Missed bacnet objects when using discover point
+
 ## [1.0.22]
 ### Fixed
 - Removed console.log in Read Point

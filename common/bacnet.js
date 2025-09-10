@@ -130,8 +130,7 @@ module.exports = {
      * Smart read multiple properties from a BACnet device with concurrent read feature and various read methods
      * readMethod
      * 0: use readProperty only
-     * 1: try readPropertyMultiple with consevative query size, fallback to readProperty if failed
-     * 2: try readPropertyMultiple twice with high and conservative query size, fallback to readProperty if failed
+     * 1: try readPropertyMultiple, reduce query size if failed, and fallback to readProperty if query size reduced to 1
      * @param {BacnetClient} client
      * @param {object} device
      *  eg:{
@@ -186,10 +185,6 @@ module.exports = {
                 for (let x = 0; x < perValueBytes.length; x++)
                     batchSizes.add(Math.trunc(device.maxApdu / perValueBytes[x]))
             }
-
-            // if readMethod === 1
-            if (readMethod === 1 && batchSizes.size > 1)
-                batchSizes = new Set([...batchSizes].slice(-1));
         }
 
         for (const batchSize of batchSizes) {
@@ -290,7 +285,7 @@ module.exports = {
                             return value;
                         } catch (err) {
                             failedCount++;
-                            if (readMethod < 2 && failedCount >= singleReadFailedRetry)
+                            if (readMethod < 1 && failedCount >= singleReadFailedRetry)
                                 throw err
                         }
                     }

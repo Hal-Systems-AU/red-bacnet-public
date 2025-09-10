@@ -41,8 +41,7 @@
         <label for="node-input-readMethod"><i class="fa fa-list"></i> Read Method</label>
         <select id="node-input-readMethod">
             <option value="0">Read Single Only</option>
-            <option value="1">Read Multiple Fallback Single</option>
-            <option value="2">Comprehensive Read</option>
+            <option value="1">Comprehensive Read</option>
         </select>
     </div>
     <div class="form-row">
@@ -73,8 +72,7 @@
 
         <dt>readMethod<span class="property-type">number</span></dt>
         <dd> <b>Read Single Only</b>: use <code>readProperty</code></dd>
-        <dd> <b>Read Multiple Fallback Single</b>: try <code>readPropertyMultiple</code> with consevative query size, fallback to <code>readProperty</code> if failed</dd>
-        <dd> <b>Comprehensive Read</b>: try <code>readPropertyMultiple</code> twice with high and conservative query size, fallback to <code>readProperty</code> if failed</dd>
+        <dd> <b>Comprehensive Read</b>: try <code>readPropertyMultiple</code>, reduce query size if failed, and fallback to <code>readProperty</code> if query size reduced to 1</dd>
 
         <dt>groupExportDeviceCount<span class="property-type">number</span></dt>
         <dd> Emit <code>msg.payload</code> once discovered devices count reaches this limit</dd>
