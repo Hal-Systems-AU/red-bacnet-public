@@ -25,6 +25,7 @@ module.exports = {
         constructor(
             client, eventEmitter, devices, points, writePoints,
             maxConcurrentDeviceWrite = 2, maxConcurrentPointWrite = 1,
+            concurrentTaskDelay = 50,
             name = 'write point'
         ) {
             super();
@@ -35,6 +36,7 @@ module.exports = {
             this.writePoints = writePoints
             this.maxConcurrentDeviceWrite = maxConcurrentDeviceWrite
             this.maxConcurrentPointWrite = maxConcurrentPointWrite
+            this.concurrentTaskDelay = concurrentTaskDelay
             this.name = name
         }
 
@@ -277,7 +279,7 @@ module.exports = {
                     task: async () => {
                         return await smartWriteProperty(
                             this.client, v.device, v.writePoints, smartWriteEvent,
-                            this.maxConcurrentPointWrite
+                            this.maxConcurrentPointWrite, this.concurrentTaskDelay
                         );
                     }
                 }));

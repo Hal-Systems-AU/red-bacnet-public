@@ -18,10 +18,10 @@ async function main() {
         // 1, 1, 1, 1, 1, // binary
         // 1, 1, 1, 1, 1, // multistate
         // 1, 1 // proprietary
-        100, 50, 50, 50, 50, // analog
-        100, 50, 50, 50, 50, // binary
-        100, 50, 50, 50, 50, // multistate
-        50, 50, // proprietary
+        40, 20, 20, 20, 20, // analog
+        40, 20, 20, 20, 20, // binary
+        40, 20, 20, 20, 20, // multistate
+        40, 40, // proprietary
     )
 
     // console.log(points)

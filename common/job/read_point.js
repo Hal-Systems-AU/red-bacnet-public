@@ -23,7 +23,7 @@ module.exports = {
 
         constructor(
             client, eventEmitter, devices, points, readMethod, maxConcurrentDeviceRead = 2,
-            maxConcurrentSinglePointRead = 5, name = 'read point'
+            maxConcurrentSinglePointRead = 5, concurrentTaskDelay = 50, name = 'read point'
         ) {
             super();
             this.client = client
@@ -33,6 +33,7 @@ module.exports = {
             this.readMethod = readMethod
             this.maxConcurrentDeviceRead = maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = maxConcurrentSinglePointRead
+            this.concurrentTaskDelay = concurrentTaskDelay
             this.name = name
         }
 
@@ -219,7 +220,8 @@ module.exports = {
                 id: k,
                 task: async () => {
                     return await smartReadProperty(
-                        this.client, v.device, v.points, this.readMethod, this.maxConcurrentSinglePointRead
+                        this.client, v.device, v.points, this.readMethod,
+                        this.maxConcurrentSinglePointRead, 5, this.concurrentTaskDelay
                     );
                 }
             }));

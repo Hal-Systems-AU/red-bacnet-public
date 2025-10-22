@@ -115,7 +115,6 @@ module.exports = {
                     if (item?.type === 105) break
 
                     result.push(item);
-                    console.log(item)
                 } catch (err) {
                     void err
                     break;
@@ -155,13 +154,15 @@ module.exports = {
      *  maximum concurrent point to read in single read mode
      * @param {number} singleReadFailedRetry
      *  retry times for single read failed
+     * @param {number} concurrentTaskDelay
+     *  delay between concurrent tasks
      * @returns array of objects
      *  eg: [{type: 12, value: {type: 8, instance: 123}, ...],
      * @async
      */
     smartReadProperty: async function (
         client, device, reqArr, readMethod = 1, maxConcurrentSinglePointRead = 5,
-        singleReadFailedRetry = 5
+        singleReadFailedRetry = 5, concurrentTaskDelay = 50
     ) {
         /* reqArr example
         [{
@@ -182,8 +183,11 @@ module.exports = {
                 batchSizes.add(20);
             else {
                 const perValueBytes = [30] // typical numeric point is 17 byte
-                for (let x = 0; x < perValueBytes.length; x++)
-                    batchSizes.add(Math.trunc(device.maxApdu / perValueBytes[x]))
+                for (let x = 0; x < perValueBytes.length; x++) {
+                    let batchSize = Math.trunc(device.maxApdu / perValueBytes[x])
+                    if (batchSize > 0)
+                        batchSizes.add(batchSize)
+                }
             }
         }
 
@@ -261,7 +265,6 @@ module.exports = {
         if (!success) {
             let failedCount = 0
             let result_single = []
-
             const dummyEventEmitter = new EventEmitter();
             const tasks = reqArr.slice(reqArrIndexNext).flatMap((req, x) =>
                 req.properties.map((prop, y) => ({
@@ -285,7 +288,7 @@ module.exports = {
                             return value;
                         } catch (err) {
                             failedCount++;
-                            if (readMethod < 1 && failedCount >= singleReadFailedRetry)
+                            if (failedCount >= singleReadFailedRetry)
                                 throw err
                         }
                     }
@@ -293,7 +296,7 @@ module.exports = {
             );
 
             try {
-                await concurrentTasks(dummyEventEmitter, tasks, maxConcurrentSinglePointRead);
+                await concurrentTasks(dummyEventEmitter, tasks, maxConcurrentSinglePointRead, concurrentTaskDelay);
             } catch (err) {
                 void err
             }
@@ -342,9 +345,14 @@ module.exports = {
      * @param {EventEmitter} eventEmitter
      * @param {number} maxConcurrentWrite
      *  maximum concurrent point to write
+     * @param {number} concurrentTaskDelay
+     *  delay between concurrent tasks
      * @async
      */
-    smartWriteProperty: async function (client, device, writePoints, eventEmitter, maxConcurrentWrite) {
+    smartWriteProperty: async function (
+        client, device, writePoints, eventEmitter, maxConcurrentWrite,
+        concurrentTaskDelay = 50
+    ) {
         const entries = Object.entries(writePoints);
 
         // current writePropertyMultiple will throw ERR_TIMEOUT if any of the write fails
@@ -370,7 +378,7 @@ module.exports = {
                 }
             }));
 
-        await concurrentTasks(eventEmitter, tasks, maxConcurrentWrite);
+        await concurrentTasks(eventEmitter, tasks, maxConcurrentWrite, concurrentTaskDelay);
 
         // write properties multiples example
         // const values = [

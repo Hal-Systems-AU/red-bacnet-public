@@ -17,10 +17,13 @@ module.exports = {
      * @param {EventEmitter} eventEmitter - The event emitter to emit events to.
      * @param {Array} tasks - The list of tasks to execute.
      * @param {number} maxConcurrent - The maximum number of concurrent tasks.
+     * @param {number} concurrentTaskDelay - The delay between concurrent tasks.
      * @returns {Promise<Array>} - A promise that resolves with an array of results.
      * @async
     */
-    concurrentTasks: async function (eventEmitter, tasks, maxConcurrent) {
+    concurrentTasks: async function (
+        eventEmitter, tasks, maxConcurrent, concurrentTaskDelay = 50
+    ) {
         const executing = new Set();
         const results = [];
 
@@ -44,7 +47,8 @@ module.exports = {
                 await Promise.race(executing);
             }
 
-            await delay(50)
+            if (concurrentTaskDelay > 0)
+                await delay(concurrentTaskDelay)
         }
 
         await Promise.allSettled(executing);

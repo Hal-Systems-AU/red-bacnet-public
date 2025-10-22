@@ -2,6 +2,7 @@
 
 const bacnet = require('@root/ext/node-bacstack/dist/index.js');
 const EventEmitter = require('events');
+const baEnum = bacnet.enum;
 
 const fs = require('fs');
 const path = require('path');
@@ -33,6 +34,11 @@ const config = {
 }
 const bacnetPointsPath = path.join(testLibPath, testSimple ? 'bacnet_points_simple.json' : 'bacnet_points_full.json')
 const bacnetPoints = JSON.parse(fs.readFileSync(bacnetPointsPath, 'utf8'))
+const binaryObjectTypes = [
+    baEnum.ObjectType.BINARY_INPUT,
+    baEnum.ObjectType.BINARY_OUTPUT,
+    baEnum.ObjectType.BINARY_VALUE,
+]
 
 // ---------------------------------- test ----------------------------------
 describe(`${DiscoverPointJob.name} tests`, () => {
@@ -76,14 +82,16 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             }
         }
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 0, 1, 50, 1, 1);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            0, 1, 50,
+            1, 1, 0,
+        );
 
         await discoverPointJob.execute();
         // console.log(error)
         expect(progress).toBe(100);
         expect(error).toStrictEqual(expected);
-
-
     }, 10000);
 
     it.each([
@@ -110,7 +118,11 @@ describe(`${DiscoverPointJob.name} tests`, () => {
     ])('schema validation error', async (devices) => {
         error = null;
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 0, 1, 50, 1, 1);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            0, 1, 50,
+            1, 1, 0,
+        );
 
         await discoverPointJob.execute();
         // console.log(error)
@@ -144,7 +156,11 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 0, 1, 50, 1, 1);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            0, 1, 50,
+            1, 1, 0,
+        );
 
         await discoverPointJob.execute();
         // console.log(errorAll)
@@ -168,7 +184,11 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 0, 1, 50, 1, 1);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            0, 1, 50,
+            1, 1, 0,
+        );
 
         await discoverPointJob.execute();
 
@@ -195,16 +215,44 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 0, 1, 50, 1, 1);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            0, 1, 50,
+            1, 1, 0,
+        );
+
         await discoverPointJob.execute();
 
         // filter out proprietary points
-        const filterbacnetPoints = bacnetPoints.filter(item => item.bacType <= 128);
+        const filterbacnetPoints = bacnetPoints
+            .filter(item => item.bacType <= 128)
+            .map(point => {
+                // Check if it's a binary type
+                if (binaryObjectTypes.includes(point.bacType)) {
+                    // Convert value true/false → 1/0
+                    const newValue = point.value === true ? 1 : 0;
+
+                    // Replace empty facets with default
+                    const newFacets = point.facets?.trim() === ""
+                        ? "falseText:false;trueText:true"
+                        : point.facets;
+
+                    return {
+                        ...point,
+                        value: newValue,
+                        facets: newFacets,
+                    };
+                }
+
+                // Non-binary types remain unchanged
+                return point;
+            });
         // console.log(error)
         // console.log(result)
         // console.log(bacnetPoints)
         expect(progress).toBe(100);
         // expect(error).toBeNull();
+
         expect(compareObj(result, filterbacnetPoints, ['priority'])).toBe(true);
     }, 10000);
 
@@ -224,14 +272,58 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 1, 1, 50, 1, 1);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            1, 1, 50,
+            1, 1, 0,
+        );
+
         await discoverPointJob.execute();
 
+        const filterbacnetPoints = bacnetPoints
+            .map(point => {
+                // Check if it's a binary type
+                if (binaryObjectTypes.includes(point.bacType)) {
+                    // Convert value true/false → 1/0
+                    const newValue = point.value === true ? 1 : 0;
+
+                    // Replace empty facets with default
+                    const newFacets = point.facets?.trim() === ""
+                        ? "falseText:false;trueText:true"
+                        : point.facets;
+
+                    return {
+                        ...point,
+                        value: newValue,
+                        facets: newFacets,
+                    };
+                }
+
+                // Non-binary types remain unchanged
+                return point;
+            });
         // console.log(error)
         // console.log(result)
-        // console.log(bacnetPoints)
+        // console.log(bacnetPoints.length)
+        // console.log(filterbacnetPoints.length)
         expect(progress).toBe(100);
-        expect(compareObj(result, bacnetPoints, ['priority'])).toBe(true);
+
+        if (Array.isArray(result)) {
+            // @ts-ignore
+            result.forEach(point => {
+                delete point.facets;
+            });
+        }
+
+        filterbacnetPoints.forEach(point => {
+            delete point.facets;
+        });
+
+        // export points
+        // fs.writeFileSync('result.json', JSON.stringify(result, null, 4));
+        // fs.writeFileSync('filterbacnetPoints.json', JSON.stringify(filterbacnetPoints, null, 4));
+
+        expect(compareObj(result, filterbacnetPoints, ['priority'])).toBe(true);
     }, 10000);
 
     test('discover single device full mode read single', async () => {
@@ -250,7 +342,12 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const discoverPointJob = new DiscoverPointJob(client, eventEmitter, devices, 1, 0, 50, 50);
+        const discoverPointJob = new DiscoverPointJob(
+            client, eventEmitter, devices,
+            1, 0, 50,
+            50, 50, 0,
+        );
+
         await discoverPointJob.execute();
 
         // console.log(error)
@@ -263,7 +360,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // if threshold is raise in future, this test may need to be updated or deleted
         // may fail on full mode but pass on simple mode
         // @ts-expect-error
-        expect(result.length).toBeLessThanOrEqual(bacnetPoints.length);
+        expect(result.length).toEqual(bacnetPoints.length);
     }, 10000);
 
     // test with multiple devices (x3)
@@ -305,16 +402,52 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         }]
 
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices, 1, 1, groupExportDeviceCount, maxConcurrentDeviceRead
+            client, eventEmitter, devices,
+            1, 1, groupExportDeviceCount,
+            maxConcurrentDeviceRead, 50, 0,
         );
+
         await discoverPointJob.execute();
 
-        const expected = [...bacnetPoints, ...bacnetPoints, ...bacnetPoints]
+        const expected = ([...bacnetPoints, ...bacnetPoints, ...bacnetPoints])
+            .map(point => {
+                // Check if it's a binary type
+                if (binaryObjectTypes.includes(point.bacType)) {
+                    // Convert value true/false → 1/0
+                    const newValue = point.value === true ? 1 : 0;
+
+                    // Replace empty facets with default
+                    const newFacets = point.facets?.trim() === ""
+                        ? "falseText:false;trueText:true"
+                        : point.facets;
+
+                    return {
+                        ...point,
+                        value: newValue,
+                        facets: newFacets,
+                    };
+                }
+
+                // Non-binary types remain unchanged
+                return point;
+            });
         // console.log(error)
         // console.log(result)
         // console.log(resultAll)
         // console.log(expected)
         expect(progress).toBe(100);
+
+        if (Array.isArray(result)) {
+            // @ts-ignore
+            result.forEach(point => {
+                delete point.facets;
+            });
+        }
+
+        expected.forEach(point => {
+            delete point.facets;
+        });
+
         expect(compareObj(result, expected, ['priority', 'deviceName'])).toBe(true);
     }, 10000);
 

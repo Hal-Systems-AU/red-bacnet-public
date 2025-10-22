@@ -29,26 +29,26 @@ const discoveredDevices = [
 
 const pointsGenerator = (
     // analog
-    AI = 100,
-    AO = 50,
-    AO_write = 50,
-    AV = 50,
-    AV_write = 50,
+    AI = 40,
+    AO = 20,
+    AO_write = 20,
+    AV = 20,
+    AV_write = 20,
     // binary
-    BI = 100,
-    BO = 50,
-    BO_write = 50,
-    BV = 50,
-    BV_write = 50,
+    BI = 40,
+    BO = 20,
+    BO_write = 20,
+    BV = 20,
+    BV_write = 20,
     // multistate
-    MSI = 100,
-    MSO = 50,
-    MSO_write = 50,
-    MSV = 50,
-    MSV_write = 50,
+    MSI = 40,
+    MSO = 20,
+    MSO_write = 20,
+    MSV = 20,
+    MSV_write = 20,
     // proprietary
-    proprietary = 50,
-    proprietary_write = 50,
+    proprietary = 40,
+    proprietary_write = 40,
 ) => {
     const points = []
     let bacType

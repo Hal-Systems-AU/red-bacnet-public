@@ -86,7 +86,10 @@ describe(`${ReadPointJob.name} tests`, () => {
             }
         }
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, devices, bacnetPoints, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, devices,
+            bacnetPoints, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(error)
@@ -111,14 +114,16 @@ describe(`${ReadPointJob.name} tests`, () => {
             }
         }
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, points, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, deviceSingle,
+            points, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(error)
         expect(progress).toBe(100);
         expect(error).toStrictEqual(expected);
     });
-
 
     it.each([
         [[{
@@ -144,7 +149,10 @@ describe(`${ReadPointJob.name} tests`, () => {
     ])('device schema validation error', async (devices) => {
         error = null;
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, devices, bacnetPoints, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, devices,
+            bacnetPoints, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(error)
@@ -178,7 +186,10 @@ describe(`${ReadPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, devices, bacnetPoints, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, devices,
+            bacnetPoints, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(errorAll)
@@ -213,7 +224,11 @@ describe(`${ReadPointJob.name} tests`, () => {
     ])('point schema validation error', async (points) => {
         error = null;
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, points, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, deviceSingle,
+            points, 1, 1, 5, 0
+        );
+
         await readPointJob.execute();
 
         // console.log(error)
@@ -248,7 +263,10 @@ describe(`${ReadPointJob.name} tests`, () => {
     ])('point duplicated id', async (points) => {
         error = null;
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, points, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, deviceSingle,
+            points, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(error)
@@ -272,7 +290,10 @@ describe(`${ReadPointJob.name} tests`, () => {
             'priority': 0
         }]
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, points, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, deviceSingle,
+            points, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(error)
@@ -298,7 +319,10 @@ describe(`${ReadPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, devices, bacnetPoints, 0, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, devices,
+            bacnetPoints, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(result)
@@ -318,7 +342,10 @@ describe(`${ReadPointJob.name} tests`, () => {
         result = null
         errorAll = []
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, bacnetPoints, readMethod, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, deviceSingle,
+            bacnetPoints, readMethod, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(result)
@@ -427,7 +454,10 @@ describe(`${ReadPointJob.name} tests`, () => {
             'BacServer.Proprietary Output 0': { value: 29.8, fvalue: '29.8', err: '' }
         }
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, points, 1, 1);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, deviceSingle,
+            points, 1, 1, 5, 0
+        );
         await readPointJob.execute();
 
         // console.log(result)
@@ -484,7 +514,10 @@ describe(`${ReadPointJob.name} tests`, () => {
             deviceName: deviceNames[index % deviceNames.length]
         }));
 
-        const readPointJob = new ReadPointJob(client, eventEmitter, devices, points, 1, 2);
+        const readPointJob = new ReadPointJob(
+            client, eventEmitter, devices,
+            points, 1, 2, 5, 0
+        );
         await readPointJob.execute();
 
         const errorCount = Object.values(result).reduce((count, item) => {

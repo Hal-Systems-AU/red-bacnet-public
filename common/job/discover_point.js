@@ -53,7 +53,8 @@ module.exports = {
 
         constructor(
             client, eventEmitter, inputDevices, discoverMode, readMethod, groupExportDeviceCount,
-            maxConcurrentDeviceRead, maxConcurrentSinglePointRead, name = 'discover point'
+            maxConcurrentDeviceRead, maxConcurrentSinglePointRead, concurrentTaskDelay = 50,
+            name = 'discover point'
         ) {
             super();
             this.client = client
@@ -64,6 +65,7 @@ module.exports = {
             this.groupExportDeviceCount = groupExportDeviceCount
             this.maxConcurrentDeviceRead = maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = maxConcurrentSinglePointRead
+            this.concurrentTaskDelay = concurrentTaskDelay
             this.name = name
         }
 
@@ -194,7 +196,7 @@ module.exports = {
 
                         return await readPoints(
                             d, objectListFinal, discoverPointEvent, this.name, this.client, this.readMethod,
-                            this.maxConcurrentSinglePointRead
+                            this.maxConcurrentSinglePointRead, this.concurrentTaskDelay
                         );
                     } catch (error) {
                         this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, `Error reading ${d.deviceName} points`, error));
@@ -237,7 +239,8 @@ module.exports = {
 
 // ---------------------------------- functions ----------------------------------
 const readPoints = async (
-    device, objects, eventEmitter, name, client, readMethod, maxConcurrentSinglePointRead
+    device, objects, eventEmitter, name, client, readMethod, maxConcurrentSinglePointRead,
+    concurrentTaskDelay
 ) => {
     const points = [];
 
@@ -258,7 +261,7 @@ const readPoints = async (
     try {
         // First request - get basic properties
         const result = await smartReadProperty(
-            client, device, reqArr, readMethod, maxConcurrentSinglePointRead, 50
+            client, device, reqArr, readMethod, maxConcurrentSinglePointRead, 50, concurrentTaskDelay
         );
 
         // Process basic properties first
@@ -279,7 +282,7 @@ const readPoints = async (
             try {
                 // Force use single read on state text to reduce loss especially long text
                 const stateTextResult = await smartReadProperty(
-                    client, device, stateTextReqArr, 0, 1, 50
+                    client, device, stateTextReqArr, 0, 1, 50, concurrentTaskDelay
                 );
 
                 // Update points with STATE_TEXT
@@ -374,7 +377,7 @@ const setPointValues = (point, i) => {
 
 const processValue = (value, facets) => {
     if (value?.errorClass != null && value?.errorCode != null) return null;
-    const match = facets.match(/precision:(\d+)/);
+    const match = facets?.match(/precision:(\d+)/);
     const precision = match ? +match[1] : null;
 
     if (typeof value === 'number')

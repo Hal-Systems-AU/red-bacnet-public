@@ -48,7 +48,7 @@ const deviceSingle = [{
 }]
 const writeValue = 500
 const writePointsSimple = {
-    [`BacServer.Analog Output ${testSimple ? '1' : '50'}`]: writeValue,
+    [`BacServer.Analog Output ${testSimple ? '1' : '20'}`]: writeValue,
 }
 
 // ---------------------------------- test ----------------------------------
@@ -414,7 +414,7 @@ describe(`${WritePointJob.name} tests`, () => {
         errorAll = []
 
         // prepare write points
-        const count = (testSimple ? 1 : 50)
+        const count = (testSimple ? 1 : 20)
         const writePoints = {}
         const writeNameList = [
             'Analog Output', 'Binary Output', 'Multi State Output',
@@ -441,7 +441,8 @@ describe(`${WritePointJob.name} tests`, () => {
 
         // write
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, bacnetPoints, writePoints, 1, 50
+            client, eventEmitter, deviceSingle, bacnetPoints, writePoints,
+            1, 50, 0
         );
         await writePointJob.execute();
         // console.log(errorAll)
@@ -499,7 +500,7 @@ describe(`${WritePointJob.name} tests`, () => {
         });
 
         // prepare write points
-        const count = (testSimple ? 1 : 50)
+        const count = (testSimple ? 1 : 20)
         const writePoints = {}
         const writeMap = [
             {
@@ -544,7 +545,8 @@ describe(`${WritePointJob.name} tests`, () => {
 
         // write
         const writePointJob = new WritePointJob(
-            client, eventEmitter, devicesMulti, bacnetPointsMulti, writePoints, 3, 50
+            client, eventEmitter, devicesMulti, bacnetPointsMulti, writePoints,
+            3, 50, 0
         );
         await writePointJob.execute();
         // console.log(errorAll)

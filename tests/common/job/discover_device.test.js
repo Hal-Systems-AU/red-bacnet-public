@@ -4,7 +4,7 @@ const bacnet = require('@root/ext/node-bacstack/dist/index.js');
 const EventEmitter = require('events');
 
 // @ts-expect-error
-// eslint-disable-next-line
+
 const { assert, print } = require('@tests/_test_lib/util.js');
 const { describe, beforeAll, afterAll, expect, test } = require('@jest/globals');
 
@@ -17,7 +17,6 @@ const network = 65535;
 const lowLimit = 0
 const highLimit = 4194304
 const whoIsTimeout = 500;
-const readDeviceNameTimeout = 500
 
 // ---------------------------------- constants ----------------------------------
 const eventEmitter = new EventEmitter();
@@ -51,7 +50,7 @@ describe(`${DiscoverDeviceJob.name} tests`, () => {
 
     test('discover devices', async () => {
         const discoverDeviceJob = new DiscoverDeviceJob(
-            client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout, readDeviceNameTimeout
+            client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout
         );
 
         await discoverDeviceJob.onStart();
