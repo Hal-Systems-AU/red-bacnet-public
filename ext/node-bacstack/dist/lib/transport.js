@@ -14,6 +14,7 @@ class Transport extends events_1.EventEmitter {
             this._server.on('message', (msg, rinfo) => {
                 // NOTE HAL modified
                 const port = rinfo.port || DEFAULT_BACNET_PORT;
+                // this.emit('message', msg, `${rinfo.address}:${port}`);
                 if (port === DEFAULT_BACNET_PORT)
                     this.emit('message', msg, rinfo.address);
                 else

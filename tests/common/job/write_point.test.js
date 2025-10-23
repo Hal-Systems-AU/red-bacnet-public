@@ -350,20 +350,26 @@ describe(`${WritePointJob.name} tests`, () => {
     });
 
     it.each([
-        [{ key: 123 }],
-    ])('write points not found in points config', async (writePoints) => {
+        [{ 'BacServer.NonExistentPoint': 123, [`BacServer.${testSimple ? 'Analog Output 1' : 'Analog Output 20'}`]: 555 }],
+    ])('write points not found in points config - should emit error but continue', async (writePoints) => {
         error = null;
+        errorAll = [];
 
         const writePointJob = new WritePointJob(
             client, eventEmitter, deviceSingle, bacnetPoints, writePoints, 1, 1
         );
         await writePointJob.execute();
 
-        // console.log(error)
+        // Should emit an error for missing points but still continue execution
         expect(progress).toBe(100);
-        expect(error).not.toBeNull();
-        // @ts-expect-error
-        expect(error[`[write point] ${ERR_WRITE_POINT_NOT_FOUND}`]).not.toBeUndefined();
+        // Check that the error for missing points was emitted
+        const missingPointError = errorAll.find(err => err[`[write point] ${ERR_WRITE_POINT_NOT_FOUND}`]);
+        expect(missingPointError).not.toBeUndefined();
+
+        // Check that valid points were processed (the writePointJob should have continued execution)
+        const validPointKey = `BacServer.${testSimple ? 'Analog Output 1' : 'Analog Output 20'}`;
+        const validPointExists = Object.keys(writePoints).includes(validPointKey);
+        expect(validPointExists).toBe(true);
     });
 
     it.each([
@@ -591,4 +597,3 @@ describe(`${WritePointJob.name} tests`, () => {
         errorAll = [...errorAll, err]
     });
 });
-

@@ -88,7 +88,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 5, 0
+            bacnetPoints, 1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -116,7 +116,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, deviceSingle,
-            points, 1, 1, 5, 0
+            points, 1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -151,7 +151,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 5, 0
+            bacnetPoints, 1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -188,7 +188,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 5, 0
+            bacnetPoints, 1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -226,7 +226,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, deviceSingle,
-            points, 1, 1, 5, 0
+            points, 1, 1, 50, 0
         );
 
         await readPointJob.execute();
@@ -265,7 +265,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, deviceSingle,
-            points, 1, 1, 5, 0
+            points, 1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -292,7 +292,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, deviceSingle,
-            points, 1, 1, 5, 0
+            points, 1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -321,7 +321,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 5, 0
+            bacnetPoints, 1, 1, 1000, 0
         );
         await readPointJob.execute();
 
@@ -456,7 +456,7 @@ describe(`${ReadPointJob.name} tests`, () => {
 
         const readPointJob = new ReadPointJob(
             client, eventEmitter, deviceSingle,
-            points, 1, 1, 5, 0
+            points, 1, 1, 50, 0
         );
         await readPointJob.execute();
 

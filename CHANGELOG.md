@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.2]
+### Change
+- WritePoint to not fail if point not found in points config, only raise error
+
 ## [1.1.1]
 ### Added
 - Unit test for BACnet string points

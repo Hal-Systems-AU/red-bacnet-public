@@ -233,10 +233,14 @@ module.exports = {
             });
 
             if (missingPoints.length > 0) {
+                // do not fail writing, just log the missing points and remove them from writePoints
                 this.eventEmitter.emit(EVENT_ERROR, errMsg(
                     this.name, ERR_WRITE_POINT_NOT_FOUND, missingPoints
                 ))
-                return false
+
+                missingPoints.forEach(point => {
+                    delete this.writePointDetails[point];
+                });
             }
 
             if (priorityErrList.length > 0) {

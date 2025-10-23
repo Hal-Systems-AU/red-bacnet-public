@@ -221,7 +221,7 @@ module.exports = {
                 task: async () => {
                     return await smartReadProperty(
                         this.client, v.device, v.points, this.readMethod,
-                        this.maxConcurrentSinglePointRead, 5, this.concurrentTaskDelay
+                        this.maxConcurrentSinglePointRead, 10, this.concurrentTaskDelay
                     );
                 }
             }));

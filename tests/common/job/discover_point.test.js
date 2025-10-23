@@ -85,7 +85,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
             0, 1, 50,
-            1, 1, 0,
+            1, 50, 0,
         );
 
         await discoverPointJob.execute();
@@ -121,7 +121,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
             0, 1, 50,
-            1, 1, 0,
+            1, 50, 0,
         );
 
         await discoverPointJob.execute();
@@ -159,7 +159,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
             0, 1, 50,
-            1, 1, 0,
+            1, 50, 0,
         );
 
         await discoverPointJob.execute();
@@ -187,7 +187,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
             0, 1, 50,
-            1, 1, 0,
+            1, 50, 0,
         );
 
         await discoverPointJob.execute();
@@ -218,7 +218,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
             0, 1, 50,
-            1, 1, 0,
+            1, 50, 0,
         );
 
         await discoverPointJob.execute();
@@ -275,7 +275,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
             1, 1, 50,
-            1, 1, 0,
+            1, 50, 0,
         );
 
         await discoverPointJob.execute();

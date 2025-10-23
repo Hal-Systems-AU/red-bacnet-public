@@ -288,6 +288,7 @@ module.exports = {
                             return value;
                         } catch (err) {
                             failedCount++;
+                            // if (readMethod < 1 && failedCount >= singleReadFailedRetry)
                             if (failedCount >= singleReadFailedRetry)
                                 throw err
                         }

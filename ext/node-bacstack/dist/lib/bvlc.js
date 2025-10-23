@@ -46,6 +46,7 @@ const decode = (buffer, offset) => {
                 if (isValidIp && isValidPort && !isBroadcast && !isMulticast && !isZero) {
                     const ip = ipParts.join(".");
                     linkAddress = (port === 47808) ? ip : `${ip}:${port}`;
+                    // linkAddress = `${ip}:${port}`;
                 }
             }
             break;
