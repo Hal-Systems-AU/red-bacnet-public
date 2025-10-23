@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1]
+### Added
+- Unit test for BACnet string points
+
+### Fixed
+- Reading offline device points run infinitely
+- Unit test failure
+
 ## [1.1.0]
 ### Changed
 - Implemented auto resize batch size when querying using readPropertyMultiple to improve performance
