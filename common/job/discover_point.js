@@ -38,6 +38,10 @@ const multiStateObjectTypes = [
 // const scheduleObjectTypes = [
 //     baEnum.ObjectType.SCHEDULE,
 // ];
+const analogBinaryObjectTypes = [
+    ...analogObjectTypes,
+    ...binaryObjectTypes,
+]
 const supportedObjectTypes = [
     ...analogObjectTypes,
     ...binaryObjectTypes,
@@ -189,9 +193,10 @@ module.exports = {
                             .filter(obj => {
                                 if (this.discoverMode == 0) // basic
                                     return obj && supportedObjectTypes.includes(obj.value.type);
-
-                                // all
-                                return obj !== null;
+                                else if (this.discoverMode == 2) // analog and binary
+                                    return obj !== null && analogBinaryObjectTypes.includes(obj.value.type);
+                                else // all
+                                    return obj !== null;
                             });
 
                         return await readPoints(

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.4]
+### Added
+- DiscoverPoint added new discover mode: Analog and Binary only
+
 ## [1.1.3]
 ### Change
 - ReadPoint and WritePoint input schema to strip unknown properties instead of rejecting them
