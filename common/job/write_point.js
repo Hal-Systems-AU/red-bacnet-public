@@ -116,7 +116,10 @@ module.exports = {
             const dupDeviceNames = [];
             this.devices.forEach(d => {
                 // validate device schema
-                const { error } = bacnetDeviceSchema.validate(d);
+                const { error } = bacnetDeviceSchema.validate(
+                    d,
+                    { stripUnknown: true }
+                );
                 if (error) {
                     deviceSchemaErrList.push(error);
                     return
@@ -152,7 +155,10 @@ module.exports = {
             const dupPointNames = [];
             this.points.forEach(p => {
                 // validate point schema
-                const { error } = bacnetPointSchema.validate(p);
+                const { error } = bacnetPointSchema.validate(
+                    p,
+                    { stripUnknown: true }
+                );
                 if (error) {
                     pointSchemaErrList.push(error);
                     return

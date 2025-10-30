@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.3]
+### Change
+- ReadPoint and WritePoint input schema to strip unknown properties instead of rejecting them
+
 ## [1.1.2]
 ### Change
 - WritePoint to not fail if point not found in points config, only raise error
