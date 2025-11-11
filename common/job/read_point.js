@@ -211,7 +211,7 @@ module.exports = {
             smartReadEvent.on(EVENT_OUTPUT, (data) => {
                 this.#updateProgress(
                     Math.round((85 / size) * (count + 1) + 10)
-                )
+                );
 
                 if (Array.isArray(data.result))
                     data.result.forEach(i => {
@@ -223,15 +223,17 @@ module.exports = {
                 count++;
             });
 
-            const tasks = entries.map(([k, v]) => ({
-                id: k,
-                task: async () => {
-                    return await smartReadProperty(
-                        this.client, v.device, v.points, this.readMethod,
-                        this.maxConcurrentSinglePointRead, 10, this.concurrentTaskDelay
-                    );
-                }
-            }));
+            const tasks = entries
+                .filter(([_, v]) => Array.isArray(v.points) && v.points.length > 0)  // eslint-disable-line
+                .map(([k, v]) => ({
+                    id: k,
+                    task: async () => {
+                        return await smartReadProperty(
+                            this.client, v.device, v.points, this.readMethod,
+                            this.maxConcurrentSinglePointRead, 10, this.concurrentTaskDelay
+                        );
+                    }
+                }));
 
             await concurrentTasks(smartReadEvent, tasks, this.maxConcurrentDeviceRead);
 

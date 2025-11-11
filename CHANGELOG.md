@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.5]
+### Change
+- ReadPoint to not add device to task queue if no points attached to device
+
 ## [1.1.4]
 ### Added
 - DiscoverPoint added new discover mode: Analog and Binary only
