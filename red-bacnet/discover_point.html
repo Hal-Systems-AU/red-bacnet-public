@@ -10,6 +10,7 @@
             groupExportDeviceCount: { value: 30000, required: true, validate: RED.validators.number() },
             maxConcurrentDeviceRead: { value: 3, required: true, validate: RED.validators.number() },
             maxConcurrentSinglePointRead: { value: 10, required: true, validate: RED.validators.number() },
+            concurrentTaskDelay: { value: 10, required: true, validate: RED.validators.number() },
         },
         inputs: 1,
         outputs: 1,
@@ -57,6 +58,10 @@
         <label for="node-input-maxConcurrentSinglePointRead"><i class="fa fa-tag"></i> Max Concurrent Single Point Read</label>
         <input type="number" id="node-input-maxConcurrentSinglePointRead" placeholder="10" , min="1" , max="1000">
     </div>
+    <div class="form-row">
+        <label for="node-input-concurrentTaskDelay"><i class="fa fa-tag"></i> Concurrent Task Delay (ms)</label>
+        <input type="number" id="node-input-concurrentTaskDelay" placeholder="10" min="0" max="10000">
+    </div>
 </script>
 
 <script type="text/html" data-help-name="discover point">
@@ -86,6 +91,9 @@
         <dt>maxConcurrentSinglePointRead<span class="property-type">number</span></dt>
         <dd> Number of points to read simultaneously when using <code>readProperty</code> mode</dd>
         <dd> <b>USE WITH CAUTION!</b> Reduce to low value if field BACnet device is underpowered</dd>
+
+        <dt>concurrentTaskDelay<span class="property-type">number</span></dt>
+        <dd> Delay in milliseconds between device reading</dd>
         </dl>
 
     <h3>Inputs</h3>

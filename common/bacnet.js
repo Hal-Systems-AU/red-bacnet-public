@@ -568,19 +568,26 @@ module.exports = {
         }
 
         return new Promise((resolve, reject) => {
+            // Build options only if priority is provided
+            const options = {};
+            if (priority !== null && priority !== undefined) {
+                options.priority = priority;
+            }
+
             client.writeProperty(
                 addressSet,
                 objectId,
                 propertyId,
                 writeValue,
-                { priority: priority },
+                options,  // may be empty if no priority
                 (err) => {
                     if (err) {
                         reject(err);
-                    }
-                    else
+                    } else {
                         resolve(true);
-                });
+                    }
+                }
+            );
         });
     },
 }

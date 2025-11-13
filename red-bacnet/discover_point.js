@@ -25,6 +25,7 @@ module.exports = function (RED) {
             this.groupExportDeviceCount = +config.groupExportDeviceCount
             this.maxConcurrentDeviceRead = +config.maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = +config.maxConcurrentSinglePointRead
+            this.concurrentTaskDelay = +config.concurrentTaskDelay
 
             // events
             this.#subscribeListeners();
@@ -43,7 +44,7 @@ module.exports = function (RED) {
                 const task = new DiscoverPointJob(
                     this.client, this.#eventEmitter, msg?.devices, this.discoverMode, this.readMethod,
                     this.groupExportDeviceCount, this.maxConcurrentDeviceRead,
-                    this.maxConcurrentSinglePointRead
+                    this.maxConcurrentSinglePointRead, this.concurrentTaskDelay
                 );
 
                 this.job.addJob({
@@ -79,4 +80,3 @@ module.exports = function (RED) {
     // ----- register node -----
     RED.nodes.registerType('discover point', DiscoverPoint);
 }
-

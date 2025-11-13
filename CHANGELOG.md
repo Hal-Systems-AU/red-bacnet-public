@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.0]
+### Added
+- DiscoverPoint and ReadPoint added concurrentTaskDelay config to control delay between concurrent tasks
+
 ## [1.1.5]
 ### Change
 - ReadPoint to not add device to task queue if no points attached to device

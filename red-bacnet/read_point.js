@@ -24,6 +24,7 @@ module.exports = function (RED) {
             this.readMethod = +config.readMethod
             this.maxConcurrentDeviceRead = +config.maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = +config.maxConcurrentSinglePointRead
+            this.concurrentTaskDelay = +config.concurrentTaskDelay
 
             // events
             this.#subscribeListeners();
@@ -46,7 +47,8 @@ module.exports = function (RED) {
                     msg.points,
                     this.readMethod,
                     this.maxConcurrentDeviceRead,
-                    this.maxConcurrentSinglePointRead
+                    this.maxConcurrentSinglePointRead,
+                    this.concurrentTaskDelay
                 );
 
                 this.job.addJob({
@@ -82,4 +84,3 @@ module.exports = function (RED) {
     // ----- register node -----
     RED.nodes.registerType('read point', ReadPoint);
 }
-
