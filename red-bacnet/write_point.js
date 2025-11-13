@@ -23,6 +23,7 @@ module.exports = function (RED) {
             this.client = RED.nodes.getNode(config.client).instance;
             this.maxConcurrentDeviceWrite = +config.maxConcurrentDeviceWrite
             this.maxConcurrentPointWrite = +config.maxConcurrentPointWrite
+            this.concurrentTaskDelay = +config.concurrentTaskDelay
 
             // events
             this.#subscribeListeners();
@@ -45,7 +46,8 @@ module.exports = function (RED) {
                     msg.points,
                     msg.writePoints,
                     this.maxConcurrentDeviceWrite,
-                    this.maxConcurrentPointWrite
+                    this.maxConcurrentPointWrite,
+                    this.concurrentTaskDelay
                 );
 
                 this.job.addJob({
@@ -81,4 +83,3 @@ module.exports = function (RED) {
     // ----- register node -----
     RED.nodes.registerType('write point', WritePoint);
 }
-

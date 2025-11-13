@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0]
+### Added
+- WritePoint added concurrentTaskDelay config to control delay between concurrent tasks
+
+### Changed
+- Default maxConcurrentDeviceRead to 1 for discover_point, read_point and write_point
+
 ## [1.2.0]
 ### Added
 - DiscoverPoint and ReadPoint added concurrentTaskDelay config to control delay between concurrent tasks
