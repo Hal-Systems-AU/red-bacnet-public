@@ -6,7 +6,7 @@ const EventEmitter = require('events');
 const bacnet = require('@root/ext/node-bacstack/dist/index.js')
 const baEnum = bacnet.enum;
 
-const { EVENT_ERROR } = require('@root/common/core/constant.js')
+const { EVENT_ERROR, EVENT_OUTPUT } = require('@root/common/core/constant.js')
 const { concurrentTasks } = require('@root/common/core/concurrent.js')
 const { getErrMsg } = require('@root/common/func.js')
 
@@ -266,6 +266,9 @@ module.exports = {
             let failedCount = 0
             let result_single = []
             const dummyEventEmitter = new EventEmitter();
+            dummyEventEmitter.on(EVENT_OUTPUT, () => { });
+            dummyEventEmitter.on(EVENT_ERROR, () => { });
+
             const tasks = reqArr.slice(reqArrIndexNext).flatMap((req, x) =>
                 req.properties.map((prop, y) => ({
                     id: `${x}-${y}`,

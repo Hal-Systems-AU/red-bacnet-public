@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0]
+### Changed
+- `read_point` readMethod removed `Read Multiple Fallback Single` option
+
+### Fixed
+- Fixed dummy event emitter not catching output and error
+- Fixed read point event emitter not catching error
+
 ## [1.3.0]
 ### Added
 - WritePoint added concurrentTaskDelay config to control delay between concurrent tasks

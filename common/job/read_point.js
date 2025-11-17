@@ -223,6 +223,10 @@ module.exports = {
                 count++;
             });
 
+            smartReadEvent.on(EVENT_ERROR, (data) => {
+                this.eventEmitter.emit(EVENT_ERROR, data)
+            });
+
             const tasks = entries
                 .filter(([_, v]) => Array.isArray(v.points) && v.points.length > 0)  // eslint-disable-line
                 .map(([k, v]) => ({
