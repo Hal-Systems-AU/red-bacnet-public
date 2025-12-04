@@ -6,7 +6,7 @@ const Joi = require('joi');
 module.exports = {
     bacnetDeviceSchema: Joi.object({
         deviceName: Joi.string().allow('').default(''),
-        deviceId: Joi.number().min(0).max(4194302).required(),
+        deviceId: Joi.number().min(0).max(4194303).allow(null).required(),
         network: Joi.number().min(0).max(65534).allow(null).default(null),
         ipAddress: Joi.string().required().custom((value, helpers) => {
             const [ip, port] = value.split(':');

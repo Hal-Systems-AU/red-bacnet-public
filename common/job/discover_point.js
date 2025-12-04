@@ -100,6 +100,10 @@ module.exports = {
                             device,
                             { stripUnknown: true }
                         );
+                        // if device id is null, set to 4194303
+                        if (result.deviceId == null)
+                            result.deviceId = 4194303;
+
                         if (error) {
                             this.eventEmitter.emit(EVENT_ERROR, errMsg(
                                 this.name, ERR_SCHEMA_VALIDATION, error

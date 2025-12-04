@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.4.1]
+### Changed
+- `discover_point` allows device id to be null, to discover based on IP configuration
+
 ## [1.4.0]
 ### Changed
 - `read_point` readMethod removed `Read Multiple Fallback Single` option
