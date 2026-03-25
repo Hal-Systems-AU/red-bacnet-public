@@ -1,0 +1,12 @@
+[
+  {
+    "deviceId": 1122,
+    "network": null,
+    "ipAddress": "192.168.68.100",
+    "macAddress": null,
+    "segmentation": 0,
+    "maxApdu": 1476,
+    "vendorId": 36,
+    "deviceName": "MockBmsDevLite_1122"
+  }
+]

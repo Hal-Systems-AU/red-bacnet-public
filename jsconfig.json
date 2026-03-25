@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES2022",
+        "baseUrl": ".",
+        "paths": {
+            "@root/*": ["./*"],
+            "@tests/*": ["./tests/*"]
+        },
+        "strict": true,
+        "checkJs": true,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "skipLibCheck": true,
+        "noUnusedLocals": true,
+        "noImplicitThis": false
+    },
+    "exclude": ["node_modules", "ext"]
+}

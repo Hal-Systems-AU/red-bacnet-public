@@ -1,0 +1,614 @@
+{
+  "MockBmsDevLite_1122.VAV_9_ZoneTemp": {
+    "value": 26.4,
+    "fvalue": "26.4 °C"
+  },
+  "MockBmsDevLite_1122.VAV_9_SupplyAirTemp": {
+    "value": 13.4,
+    "fvalue": "13.4 °C"
+  },
+  "MockBmsDevLite_1122.VAV_9_SupplyAirFlowSp": {
+    "value": 128.9,
+    "fvalue": "128.9 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_9_SupplyAirFlow": {
+    "value": 112.9,
+    "fvalue": "112.9 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_9_DamperPos": {
+    "value": 38.7,
+    "fvalue": "38.7 %"
+  },
+  "MockBmsDevLite_1122.VAV_8_ZoneTemp": {
+    "value": 26.1,
+    "fvalue": "26.1 °C"
+  },
+  "MockBmsDevLite_1122.VAV_8_SupplyAirTemp": {
+    "value": 12.1,
+    "fvalue": "12.1 °C"
+  },
+  "MockBmsDevLite_1122.VAV_8_SupplyAirFlowSp": {
+    "value": 196.4,
+    "fvalue": "196.4 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_8_SupplyAirFlow": {
+    "value": 150.3,
+    "fvalue": "150.3 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_8_DamperPos": {
+    "value": 80.7,
+    "fvalue": "80.7 %"
+  },
+  "MockBmsDevLite_1122.VAV_7_ZoneTemp": {
+    "value": 26,
+    "fvalue": "26 °C"
+  },
+  "MockBmsDevLite_1122.VAV_7_SupplyAirTemp": {
+    "value": 12.8,
+    "fvalue": "12.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_7_SupplyAirFlowSp": {
+    "value": 166.4,
+    "fvalue": "166.4 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_7_SupplyAirFlow": {
+    "value": 198.4,
+    "fvalue": "198.4 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_7_DamperPos": {
+    "value": 72.2,
+    "fvalue": "72.2 %"
+  },
+  "MockBmsDevLite_1122.VAV_6_ZoneTemp": {
+    "value": 23.7,
+    "fvalue": "23.7 °C"
+  },
+  "MockBmsDevLite_1122.VAV_6_SupplyAirTemp": {
+    "value": 10.2,
+    "fvalue": "10.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_6_SupplyAirFlowSp": {
+    "value": 106,
+    "fvalue": "106 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_6_SupplyAirFlow": {
+    "value": 123.5,
+    "fvalue": "123.5 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_6_DamperPos": {
+    "value": 91,
+    "fvalue": "91 %"
+  },
+  "MockBmsDevLite_1122.VAV_5_ZoneTemp": {
+    "value": 28,
+    "fvalue": "28 °C"
+  },
+  "MockBmsDevLite_1122.VAV_5_SupplyAirTemp": {
+    "value": 15,
+    "fvalue": "15 °C"
+  },
+  "MockBmsDevLite_1122.VAV_5_SupplyAirFlowSp": {
+    "value": 158.1,
+    "fvalue": "158.1 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_5_SupplyAirFlow": {
+    "value": 169.7,
+    "fvalue": "169.7 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_5_DamperPos": {
+    "value": 50.3,
+    "fvalue": "50.3 %"
+  },
+  "MockBmsDevLite_1122.VAV_4_ZoneTemp": {
+    "value": 24.6,
+    "fvalue": "24.6 °C"
+  },
+  "MockBmsDevLite_1122.VAV_4_SupplyAirTemp": {
+    "value": 10.6,
+    "fvalue": "10.6 °C"
+  },
+  "MockBmsDevLite_1122.VAV_4_SupplyAirFlowSp": {
+    "value": 153.7,
+    "fvalue": "153.7 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_4_SupplyAirFlow": {
+    "value": 191.1,
+    "fvalue": "191.1 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_4_DamperPos": {
+    "value": 73.5,
+    "fvalue": "73.5 %"
+  },
+  "MockBmsDevLite_1122.VAV_3_ZoneTemp": {
+    "value": 24.8,
+    "fvalue": "24.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_3_SupplyAirTemp": {
+    "value": 13.9,
+    "fvalue": "13.9 °C"
+  },
+  "MockBmsDevLite_1122.VAV_3_SupplyAirFlowSp": {
+    "value": 189,
+    "fvalue": "189 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_3_SupplyAirFlow": {
+    "value": 141,
+    "fvalue": "141 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_3_DamperPos": {
+    "value": 79.9,
+    "fvalue": "79.9 %"
+  },
+  "MockBmsDevLite_1122.VAV_20_ZoneTemp": {
+    "value": 22.6,
+    "fvalue": "22.6 °C"
+  },
+  "MockBmsDevLite_1122.VAV_20_SupplyAirTemp": {
+    "value": 14.8,
+    "fvalue": "14.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_20_SupplyAirFlowSp": {
+    "value": 137.5,
+    "fvalue": "137.5 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_20_SupplyAirFlow": {
+    "value": 108.3,
+    "fvalue": "108.3 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_20_DamperPos": {
+    "value": 37.2,
+    "fvalue": "37.2 %"
+  },
+  "MockBmsDevLite_1122.VAV_2_ZoneTemp": {
+    "value": 23.8,
+    "fvalue": "23.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_2_SupplyAirTemp": {
+    "value": 16.5,
+    "fvalue": "16.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_2_SupplyAirFlowSp": {
+    "value": 161.6,
+    "fvalue": "161.6 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_2_SupplyAirFlow": {
+    "value": 102.6,
+    "fvalue": "102.6 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_2_DamperPos": {
+    "value": 59.6,
+    "fvalue": "59.6 %"
+  },
+  "MockBmsDevLite_1122.VAV_19_ZoneTemp": {
+    "value": 22.8,
+    "fvalue": "22.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_19_SupplyAirTemp": {
+    "value": 13.1,
+    "fvalue": "13.1 °C"
+  },
+  "MockBmsDevLite_1122.VAV_19_SupplyAirFlowSp": {
+    "value": 142.2,
+    "fvalue": "142.2 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_19_SupplyAirFlow": {
+    "value": 185.9,
+    "fvalue": "185.9 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_19_DamperPos": {
+    "value": 16.5,
+    "fvalue": "16.5 %"
+  },
+  "MockBmsDevLite_1122.VAV_18_ZoneTemp": {
+    "value": 26.9,
+    "fvalue": "26.9 °C"
+  },
+  "MockBmsDevLite_1122.VAV_18_SupplyAirTemp": {
+    "value": 14.1,
+    "fvalue": "14.1 °C"
+  },
+  "MockBmsDevLite_1122.VAV_18_SupplyAirFlowSp": {
+    "value": 160,
+    "fvalue": "160 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_18_SupplyAirFlow": {
+    "value": 107.3,
+    "fvalue": "107.3 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_18_DamperPos": {
+    "value": 85.1,
+    "fvalue": "85.1 %"
+  },
+  "MockBmsDevLite_1122.VAV_17_ZoneTemp": {
+    "value": 21.2,
+    "fvalue": "21.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_17_SupplyAirTemp": {
+    "value": 14.5,
+    "fvalue": "14.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_17_SupplyAirFlowSp": {
+    "value": 138.2,
+    "fvalue": "138.2 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_17_SupplyAirFlow": {
+    "value": 194.2,
+    "fvalue": "194.2 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_17_DamperPos": {
+    "value": 58.2,
+    "fvalue": "58.2 %"
+  },
+  "MockBmsDevLite_1122.VAV_16_ZoneTemp": {
+    "value": 20.4,
+    "fvalue": "20.4 °C"
+  },
+  "MockBmsDevLite_1122.VAV_16_SupplyAirTemp": {
+    "value": 12.2,
+    "fvalue": "12.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_16_SupplyAirFlowSp": {
+    "value": 115.8,
+    "fvalue": "115.8 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_16_SupplyAirFlow": {
+    "value": 131.4,
+    "fvalue": "131.4 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_16_DamperPos": {
+    "value": 48.3,
+    "fvalue": "48.3 %"
+  },
+  "MockBmsDevLite_1122.VAV_15_ZoneTemp": {
+    "value": 24.3,
+    "fvalue": "24.3 °C"
+  },
+  "MockBmsDevLite_1122.VAV_15_SupplyAirTemp": {
+    "value": 11,
+    "fvalue": "11 °C"
+  },
+  "MockBmsDevLite_1122.VAV_15_SupplyAirFlowSp": {
+    "value": 149.8,
+    "fvalue": "149.8 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_15_SupplyAirFlow": {
+    "value": 122.6,
+    "fvalue": "122.6 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_15_DamperPos": {
+    "value": 72.6,
+    "fvalue": "72.6 %"
+  },
+  "MockBmsDevLite_1122.VAV_14_ZoneTemp": {
+    "value": 29.8,
+    "fvalue": "29.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_14_SupplyAirTemp": {
+    "value": 12,
+    "fvalue": "12 °C"
+  },
+  "MockBmsDevLite_1122.VAV_14_SupplyAirFlowSp": {
+    "value": 105,
+    "fvalue": "105 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_14_SupplyAirFlow": {
+    "value": 155.1,
+    "fvalue": "155.1 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_14_DamperPos": {
+    "value": 61.6,
+    "fvalue": "61.6 %"
+  },
+  "MockBmsDevLite_1122.VAV_13_ZoneTemp": {
+    "value": 26.6,
+    "fvalue": "26.6 °C"
+  },
+  "MockBmsDevLite_1122.VAV_13_SupplyAirTemp": {
+    "value": 16,
+    "fvalue": "16 °C"
+  },
+  "MockBmsDevLite_1122.VAV_13_SupplyAirFlowSp": {
+    "value": 134.8,
+    "fvalue": "134.8 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_13_SupplyAirFlow": {
+    "value": 161.3,
+    "fvalue": "161.3 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_13_DamperPos": {
+    "value": 51.6,
+    "fvalue": "51.6 %"
+  },
+  "MockBmsDevLite_1122.VAV_12_ZoneTemp": {
+    "value": 26.5,
+    "fvalue": "26.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_12_SupplyAirTemp": {
+    "value": 15.8,
+    "fvalue": "15.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_12_SupplyAirFlowSp": {
+    "value": 111.2,
+    "fvalue": "111.2 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_12_SupplyAirFlow": {
+    "value": 155.2,
+    "fvalue": "155.2 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_12_DamperPos": {
+    "value": 53.4,
+    "fvalue": "53.4 %"
+  },
+  "MockBmsDevLite_1122.VAV_11_ZoneTemp": {
+    "value": 25.6,
+    "fvalue": "25.6 °C"
+  },
+  "MockBmsDevLite_1122.VAV_11_SupplyAirTemp": {
+    "value": 10.5,
+    "fvalue": "10.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_11_SupplyAirFlowSp": {
+    "value": 188.5,
+    "fvalue": "188.5 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_11_SupplyAirFlow": {
+    "value": 167.8,
+    "fvalue": "167.8 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_11_DamperPos": {
+    "value": 58,
+    "fvalue": "58 %"
+  },
+  "MockBmsDevLite_1122.VAV_10_ZoneTemp": {
+    "value": 29.7,
+    "fvalue": "29.7 °C"
+  },
+  "MockBmsDevLite_1122.VAV_10_SupplyAirTemp": {
+    "value": 11.9,
+    "fvalue": "11.9 °C"
+  },
+  "MockBmsDevLite_1122.VAV_10_SupplyAirFlowSp": {
+    "value": 188.7,
+    "fvalue": "188.7 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_10_SupplyAirFlow": {
+    "value": 177.3,
+    "fvalue": "177.3 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_10_DamperPos": {
+    "value": 27.1,
+    "fvalue": "27.1 %"
+  },
+  "MockBmsDevLite_1122.VAV_1_ZoneTemp": {
+    "value": 27.3,
+    "fvalue": "27.3 °C"
+  },
+  "MockBmsDevLite_1122.VAV_1_SupplyAirTemp": {
+    "value": 14.9,
+    "fvalue": "14.9 °C"
+  },
+  "MockBmsDevLite_1122.VAV_1_SupplyAirFlowSp": {
+    "value": 122.4,
+    "fvalue": "122.4 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_1_SupplyAirFlow": {
+    "value": 143,
+    "fvalue": "143 L/s"
+  },
+  "MockBmsDevLite_1122.VAV_1_DamperPos": {
+    "value": 76.7,
+    "fvalue": "76.7 %"
+  },
+  "MockBmsDevLite_1122.VAV_1_ZoneSp": {
+    "value": 21.3,
+    "fvalue": "21.3 °C"
+  },
+  "MockBmsDevLite_1122.VAV_2_ZoneSp": {
+    "value": 24.2,
+    "fvalue": "24.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_3_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_4_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_5_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_6_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_7_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_8_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_9_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_10_ZoneSp": {
+    "value": 21.8,
+    "fvalue": "21.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_11_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_12_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_13_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_14_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_15_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_16_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_17_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_18_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_19_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_20_ZoneSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_1_ZoneTempSp": {
+    "value": 20.5,
+    "fvalue": "20.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_2_ZoneTempSp": {
+    "value": 20.6,
+    "fvalue": "20.6 °C"
+  },
+  "MockBmsDevLite_1122.VAV_3_ZoneTempSp": {
+    "value": 21.5,
+    "fvalue": "21.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_4_ZoneTempSp": {
+    "value": 22,
+    "fvalue": "22 °C"
+  },
+  "MockBmsDevLite_1122.VAV_5_ZoneTempSp": {
+    "value": 22.5,
+    "fvalue": "22.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_6_ZoneTempSp": {
+    "value": 23.2,
+    "fvalue": "23.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_7_ZoneTempSp": {
+    "value": 23.9,
+    "fvalue": "23.9 °C"
+  },
+  "MockBmsDevLite_1122.VAV_8_ZoneTempSp": {
+    "value": 23.8,
+    "fvalue": "23.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_9_ZoneTempSp": {
+    "value": 20.9,
+    "fvalue": "20.9 °C"
+  },
+  "MockBmsDevLite_1122.VAV_10_ZoneTempSp": {
+    "value": 24.2,
+    "fvalue": "24.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_11_ZoneTempSp": {
+    "value": 24,
+    "fvalue": "24 °C"
+  },
+  "MockBmsDevLite_1122.VAV_12_ZoneTempSp": {
+    "value": 23.2,
+    "fvalue": "23.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_13_ZoneTempSp": {
+    "value": 26,
+    "fvalue": "26 °C"
+  },
+  "MockBmsDevLite_1122.VAV_14_ZoneTempSp": {
+    "value": 24.2,
+    "fvalue": "24.2 °C"
+  },
+  "MockBmsDevLite_1122.VAV_15_ZoneTempSp": {
+    "value": 20.5,
+    "fvalue": "20.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_16_ZoneTempSp": {
+    "value": 20.5,
+    "fvalue": "20.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_17_ZoneTempSp": {
+    "value": 23.5,
+    "fvalue": "23.5 °C"
+  },
+  "MockBmsDevLite_1122.VAV_18_ZoneTempSp": {
+    "value": 20.8,
+    "fvalue": "20.8 °C"
+  },
+  "MockBmsDevLite_1122.VAV_19_ZoneTempSp": {
+    "value": 23.7,
+    "fvalue": "23.7 °C"
+  },
+  "MockBmsDevLite_1122.VAV_20_ZoneTempSp": {
+    "value": 21.4,
+    "fvalue": "21.4 °C"
+  },
+  "MockBmsDevLite_1122.Monitoring.HalHeartbeat": {
+    "value": 2055,
+    "fvalue": "2055"
+  },
+  "MockBmsDevLite_1122.Monitoring.HalLockout": {
+    "value": 0,
+    "fvalue": "false"
+  },
+  "MockBmsDevLite_1122.Mode": {
+    "value": 3,
+    "fvalue": "Auto"
+  },
+  "MockBmsDevLite_1122.Command": {
+    "value": 1,
+    "fvalue": "On"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.lolo": {
+    "value": 2,
+    "fvalue": "On"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.muahahah": {
+    "value": 12.3,
+    "fvalue": "12.3"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.LongEnum": {
+    "value": 3,
+    "fvalue": "System 1 LP Fault"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.Num1": {
+    "value": 20,
+    "fvalue": "20"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.Num2": {
+    "value": 15.9,
+    "fvalue": "15.9"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.Bool1": {
+    "value": 1,
+    "fvalue": "true"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.Bool2": {
+    "value": 1,
+    "fvalue": "true"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.Enum1": {
+    "value": 3,
+    "fvalue": "On"
+  },
+  "MockBmsDevLite_1122.Simulator.Play.Enum2": {
+    "value": 3,
+    "fvalue": "On"
+  }
+}
