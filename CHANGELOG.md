@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.4.7]
+### Added
+- Added CICD workflow
+
 ## [1.4.1]
 ### Changed
 - `discover_point` allows device id to be null, to discover based on IP configuration

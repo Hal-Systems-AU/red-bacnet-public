@@ -1,6 +1,10 @@
 {
   "name": "@halsystems/red-bacnet",
-  "version": "1.4.1",
+  "version": "1.4.7",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "description": "NodeRED BACnet IP client",
   "email": "open_source@halsystems.com.au",
   "repository": {
