@@ -27,6 +27,7 @@ module.exports = {
     ERR_WRITE_POINT_INVALID_PRIORITY: 'Write point invalid priority',
     ERR_EMPTY_DATA: 'Empty data',
     ERR_WRITING_POINT: 'Error writing point',
+    ERR_GLOBAL_QUEUE_WORKER_ERROR: 'Global queue worker error',
 
     // job error
     ERR_CONSTRUCT_ABSTRACT_JOB: 'Cannot construct abstract Job class',

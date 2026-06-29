@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.2]
+### Fixed
+- CI pipeline adjustments
+
+## [2.0.1]
+### Fixed
+- CI pipeline adjustments
+
+## [2.0.0]
+### Changed
+- Replaced independent node `CoalescedJobQueue` with global queue with priority
+
+## [2.0.0-alpha.0]
+### Changed
+- Initial testing: replaced independent node `CoalescedJobQueue` with global queue with priority
+
 ## [1.4.7]
 ### Added
 - Added CICD workflow

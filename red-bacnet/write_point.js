@@ -3,9 +3,10 @@ require('./_alias.js');
 
 const EventEmitter = require('events');
 
+const { print } = require('@root/common/core/util.js')
 const { nowFormatted } = require('@root/common/core/util.js')
 const { WritePointJob } = require('@root/common/job/write_point.js')
-const { CoalescedJobQueue } = require('@root/common/job/core.js')
+const { getQueue } = require('@root/common/job/global_queue_manager.js')
 const {
     EVENT_UPDATE_STATUS, EVENT_ERROR, EVENT_INPUT, EVENT_OUTPUT
 } = require('@root/common/core/constant.js')
@@ -28,9 +29,8 @@ module.exports = function (RED) {
             // events
             this.#subscribeListeners();
 
-            // configure job queue
-            this.job = new CoalescedJobQueue();
-            this.job.run();
+            // configure job queue - use global queue
+            this.job = getQueue();
         }
 
         #subscribeListeners() {
@@ -49,11 +49,21 @@ module.exports = function (RED) {
                     this.maxConcurrentPointWrite,
                     this.concurrentTaskDelay
                 );
+                const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : 'writePoints';
+
+                if (this.job.queue.map(item => item.id).includes(jobId)) {
+                    // @ts-ignore
+                    print(`Coalesced job: ${jobId}`, true)
+                    return;
+                }
 
                 this.job.addJob({
-                    id: (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : 'task',
-                    task: task
+                    id: jobId,
+                    task: task,
+                    priority: Number.isFinite(msg.priority) ? msg.priority : 2,
                 });
+                // @ts-ignore
+                this.status({ fill: 'yellow', shape: 'dot', text: `in queue` });
             });
 
             this.#eventEmitter.on(EVENT_OUTPUT, (data) => {

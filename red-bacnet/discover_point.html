@@ -101,7 +101,9 @@
             <dt>msg.devices <span class="property-type">array</span></dt>
                 <dd> A list of devices generated from discover device node (modify values if required)</dd>
             <dt class="optional">msg.id <span class="property-type">string | number</span></dt>
-                <dd> Job ID. Default to <code>task</code> if not provided.</dd>
+                <dd> Job ID. Default to <code>discoverPoints</code> if not provided.</dd>
+            <dt class="optional">msg.priority <span class="property-type">number</span></dt>
+                <dd> Job priority in queue. Default to <code>5</code> if not provided.</dd>
         </dl>
 
     <h3>Outputs</h3>

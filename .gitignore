@@ -5,6 +5,7 @@ temp/
 htmlcov/
 .npmrc
 *play*
+*.serena*
 
 # Logs
 logs

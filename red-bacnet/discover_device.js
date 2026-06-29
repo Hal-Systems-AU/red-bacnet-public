@@ -6,7 +6,7 @@ const EventEmitter = require('events');
 const { print } = require('@root/common/core/util.js')
 const { nowFormatted } = require('@root/common/core/util.js')
 const { DiscoverDeviceJob } = require('@root/common/job/discover_device.js')
-const { CoalescedJobQueue } = require('@root/common/job/core.js')
+const { getQueue } = require('@root/common/job/global_queue_manager.js')
 const {
     EVENT_UPDATE_STATUS, EVENT_ERROR, EVENT_INPUT, EVENT_OUTPUT, EVENT_CLOSE
 } = require('@root/common/core/constant.js')
@@ -32,9 +32,8 @@ module.exports = function (RED) {
             // events
             this.#subscribeListeners();
 
-            // configure job queue
-            this.job = new CoalescedJobQueue();
-            this.job.run();
+            // configure job queue - use global queue
+            this.job = getQueue();
 
             // init task
             this.task = new DiscoverDeviceJob(
@@ -59,9 +58,12 @@ module.exports = function (RED) {
                 as a result, workaround is introduce before strategy to reuse discoverDeviceJob instead
                 of creating new one every time onInput is triggered
                 */
-                if (this.job.queue.length > 0) {
-                    print('Coalesced job: discoverDevices', true)
-                    return
+                const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : 'discoverDevices';
+
+                if (this.job.queue.map(item => item.id).includes(jobId)) {
+                    // @ts-ignore
+                    print(`Coalesced job: ${jobId}`, true)
+                    return;
                 }
 
                 this.task.network = (msg.network === undefined) ? this.network : msg.network;
@@ -69,9 +71,12 @@ module.exports = function (RED) {
                 this.task.highLimit = (msg.highLimit === undefined) ? this.highLimit : msg.highLimit;
 
                 this.job.addJob({
-                    id: (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : 'task',
-                    task: this.task
+                    id: jobId,
+                    task: this.task,
+                    priority: Number.isFinite(msg.priority) ? msg.priority : 5,
                 });
+                // @ts-ignore
+                this.status({ fill: 'yellow', shape: 'dot', text: `in queue` });
             });
 
             // @ts-ignore
