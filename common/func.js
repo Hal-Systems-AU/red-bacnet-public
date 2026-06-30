@@ -1,5 +1,7 @@
 'use strict';
 
+const { randomUUID } = require('crypto');
+
 // ---------------------------------- export ----------------------------------
 module.exports = {
     /**
@@ -62,5 +64,15 @@ module.exports = {
             return err.message
         else
             return err
+    },
+
+    /**
+     * Generate a unique job ID using node ID and uuid
+     * @param {string} nodeId - The Node-RED node instance ID.
+     * @param {string} prefix - The prefix for the job ID (e.g., 'readPoints', 'writePoints').
+     * @returns {string} - A unique job ID.
+     */
+    generateUniqueJobId: function (nodeId, prefix) {
+        return `${prefix}-${nodeId}-${randomUUID()}`;
     },
 };

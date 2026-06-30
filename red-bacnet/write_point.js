@@ -7,6 +7,7 @@ const { print } = require('@root/common/core/util.js')
 const { nowFormatted } = require('@root/common/core/util.js')
 const { WritePointJob } = require('@root/common/job/write_point.js')
 const { getQueue } = require('@root/common/job/global_queue_manager.js')
+const { generateUniqueJobId } = require('@root/common/func.js')
 const {
     EVENT_UPDATE_STATUS, EVENT_ERROR, EVENT_INPUT, EVENT_OUTPUT
 } = require('@root/common/core/constant.js')
@@ -25,6 +26,9 @@ module.exports = function (RED) {
             this.maxConcurrentDeviceWrite = +config.maxConcurrentDeviceWrite
             this.maxConcurrentPointWrite = +config.maxConcurrentPointWrite
             this.concurrentTaskDelay = +config.concurrentTaskDelay
+
+            // @ts-ignore
+            this.jobId = generateUniqueJobId(this.id, 'writePoints');
 
             // events
             this.#subscribeListeners();
@@ -49,7 +53,7 @@ module.exports = function (RED) {
                     this.maxConcurrentPointWrite,
                     this.concurrentTaskDelay
                 );
-                const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : 'writePoints';
+                const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : this.jobId;
 
                 if (this.job.queue.map(item => item.id).includes(jobId)) {
                     // @ts-ignore

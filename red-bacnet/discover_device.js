@@ -7,6 +7,7 @@ const { print } = require('@root/common/core/util.js')
 const { nowFormatted } = require('@root/common/core/util.js')
 const { DiscoverDeviceJob } = require('@root/common/job/discover_device.js')
 const { getQueue } = require('@root/common/job/global_queue_manager.js')
+const { generateUniqueJobId } = require('@root/common/func.js')
 const {
     EVENT_UPDATE_STATUS, EVENT_ERROR, EVENT_INPUT, EVENT_OUTPUT, EVENT_CLOSE
 } = require('@root/common/core/constant.js')
@@ -24,6 +25,8 @@ module.exports = function (RED) {
             // get config
             this.client = RED.nodes.getNode(config.client).instance;
 
+            // @ts-ignore
+            this.jobId = generateUniqueJobId(this.id, 'discoverDevices');
             this.network = +config.network
             this.lowLimit = +config.lowLimit
             this.highLimit = +config.highLimit
@@ -58,7 +61,7 @@ module.exports = function (RED) {
                 as a result, workaround is introduce before strategy to reuse discoverDeviceJob instead
                 of creating new one every time onInput is triggered
                 */
-                const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : 'discoverDevices';
+                const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : this.jobId;
 
                 if (this.job.queue.map(item => item.id).includes(jobId)) {
                     // @ts-ignore

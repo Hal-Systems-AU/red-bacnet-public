@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.3]
+### Fixed
+- Added unique job id to same node type to avoid same time triggered nodes job being coalesced
+
 ## [2.0.2]
 ### Fixed
 - CI pipeline adjustments
