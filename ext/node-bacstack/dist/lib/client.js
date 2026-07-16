@@ -59,6 +59,14 @@ class Client extends events_1.EventEmitter {
         // Setup code
         this._transport.on('message', this._receiveData.bind(this));
         this._transport.on('error', this._receiveError.bind(this));
+
+        // HAL added
+        // Add a default error handler to prevent unhandled error events
+        // This will be overridden if the user adds their own error listener
+        this.on('error', (err) => {
+            debug('Unhandled error event:', err);
+        });
+
         this._transport.open();
     }
     // Helper utils

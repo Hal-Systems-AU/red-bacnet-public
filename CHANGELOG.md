@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.1.1]
+### Changed
+- Reinstated `globalBroadcastAddress` filter in transport
+
+## [2.1.0]
+### Changed
+- Matched v2.1.0-alpha.0 release
+- Removed `globalBroadcastAddress` filter from transport
+
+## [2.1.0-alpha.0]
+### Added
+- BACnet client now listening to both `interface` and `broadcastAddress`
+
+### Changed
+- `discover_devices` to drop devices that are not within the low and high limit
+
+### Fixed
+- Fixed unable to discover devices from broadcast when `interface` is not set to `0.0.0.0`
+
+
 ## [2.0.3]
 ### Fixed
 - Added unique job id to same node type to avoid same time triggered nodes job being coalesced

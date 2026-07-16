@@ -165,7 +165,12 @@ module.exports = {
             const adr = device.adr
             const net = device.net
 
+            // Check for duplicate
             if (this.knownDevices.has(deviceId)) return;
+
+            // Drop device if deviceId is not within the low and high limit
+            if (deviceId < this.lowLimit || deviceId > this.highLimit) return;
+
             this.discoverList.push({
                 deviceId: deviceId,
                 address: address,
