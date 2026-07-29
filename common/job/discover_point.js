@@ -13,7 +13,7 @@ const { readObjectList, smartReadProperty } = require('@root/common/bacnet.js')
 const { bacnetUnitMap } = require('@root/common/bacnet_unit.js')
 const { EG_BACNET_DEVICES } = require('@root/common/example')
 const { errMsg, getErrMsg } = require('@root/common/func.js')
-const { concurrentTasks } = require('@root/common/core/concurrent.js')
+const { concurrentTasksWithNetworkAwareness } = require('@root/common/core/concurrent.js')
 const {
     ERR_GENERIC, ERR_SCHEMA_VALIDATION, ERR_INVALID_DATA_TYPE, ERR_IGNORE_DUPLICATED_DEVICE_NAME,
     ERR_READING_POINTS,
@@ -53,10 +53,9 @@ const supportedObjectTypes = [
 module.exports = {
     DiscoverPointJob: class DiscoverPointJob extends BaseJob {
         devices = [];
-        pointsList = [];
 
         constructor(
-            client, eventEmitter, inputDevices, discoverMode, readMethod, groupExportDeviceCount,
+            client, eventEmitter, inputDevices, discoverMode, readMethod,
             maxConcurrentDeviceRead, maxConcurrentSinglePointRead, concurrentTaskDelay = 50,
             name = 'discover point'
         ) {
@@ -66,7 +65,6 @@ module.exports = {
             this.inputDevices = inputDevices
             this.discoverMode = discoverMode
             this.readMethod = readMethod
-            this.groupExportDeviceCount = groupExportDeviceCount
             this.maxConcurrentDeviceRead = maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = maxConcurrentSinglePointRead
             this.concurrentTaskDelay = concurrentTaskDelay
@@ -74,7 +72,7 @@ module.exports = {
         }
 
         async execute() {
-            this.#updateProgress(0)
+            this.#updateProgress('discovering')
 
             return new Promise((resolve) => {
                 try {
@@ -88,7 +86,7 @@ module.exports = {
                                 example: EG_BACNET_DEVICES
                             })
                         )
-                        this.#updateProgress(100)
+                        this.#updateProgress('completed')
                         resolve();
                         return
                     }
@@ -124,14 +122,16 @@ module.exports = {
                         this.devices.push(result);
                     }
 
-                    this.#updateProgress(10)
+                    // If no valid devices, complete immediately
+                    if (this.devices.length === 0) {
+                        this.#updateProgress('completed')
+                        resolve();
+                        return
+                    }
 
                     // read all device points
                     this.#readAllDevicePoints().then(() => {
-                        if (this.pointsList.length > 0)
-                            this.#exportPoints();
-
-                        this.#updateProgress(100)
+                        this.#updateProgress('completed')
                         resolve();
                     });
                 } catch (err) {
@@ -145,22 +145,17 @@ module.exports = {
             const discoverPointEvent = new EventEmitter();
             const size = this.devices.length;
             let count = 0;
-            let discoveredDevices = 0
 
             discoverPointEvent.on(EVENT_OUTPUT, (data) => {
-                this.#updateProgress(
-                    Math.round((85 / size) * (count + 1) + 10)
-                )
-
-                if (Array.isArray(data.result))
-                    this.pointsList.push(...data.result);
-
                 count++;
-                discoveredDevices++;
+                this.#updateProgress(count, size);
 
-                if (discoveredDevices >= this.groupExportDeviceCount) {
-                    this.#exportPoints();
-                    discoveredDevices = 0
+                // Export points immediately after each device is discovered
+                if (Array.isArray(data.result)) {
+                    this.#exportPoints(data.result);
+                } else {
+                    // Export empty array if no points discovered
+                    this.#exportPoints([]);
                 }
             });
 
@@ -170,10 +165,11 @@ module.exports = {
 
             const tasks = this.devices.map((d, i) => ({
                 id: d.deviceName,
-                task: async () => {
+                device: d,
+                task: async (getNextInvokeId) => {
                     void i
                     try {
-                        const objectList = await readObjectList(this.client, d);
+                        const objectList = await readObjectList(this.client, d, getNextInvokeId);
 
                         // istanbul ignore next
                         if (objectList == null) return;
@@ -205,7 +201,7 @@ module.exports = {
 
                         return await readPoints(
                             d, objectListFinal, discoverPointEvent, this.name, this.client, this.readMethod,
-                            this.maxConcurrentSinglePointRead, this.concurrentTaskDelay
+                            this.maxConcurrentSinglePointRead, this.concurrentTaskDelay, getNextInvokeId
                         );
                     } catch (error) {
                         this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, `Error reading ${d.deviceName} points`, error));
@@ -213,25 +209,33 @@ module.exports = {
                 }
             }));
 
-            await concurrentTasks(discoverPointEvent, tasks, this.maxConcurrentDeviceRead);
+            await concurrentTasksWithNetworkAwareness(discoverPointEvent, tasks, this.maxConcurrentDeviceRead);
         }
 
-        #updateProgress(progress) {
-            this.eventEmitter.emit(EVENT_UPDATE_STATUS, progress);
+        #updateProgress(discovered, total) {
+            let message;
+            if (typeof discovered === 'string') {
+                // discovered is a status message like 'initializing' or 'completed'
+                message = discovered;
+            } else {
+                // discovered and total are numbers
+                message = `discovered: ${discovered}/${total}`;
+            }
+            this.eventEmitter.emit(EVENT_UPDATE_STATUS, message);
         }
 
-        #exportPoints() {
+        #exportPoints(points) {
             let exportPointsList = [];
-            for (let i = 0; i < this.pointsList.length; i++) {
+            for (let i = 0; i < points.length; i++) {
                 const { error, value: result } = bacnetPointSchema.validate(
-                    this.pointsList[i], { stripUnknown: true }
+                    points[i], { stripUnknown: true }
                 );
                 // istanbul ignore next
                 {
                     if (error) {
                         this.eventEmitter.emit(EVENT_ERROR, errMsg(
                             this.name, ERR_SCHEMA_VALIDATION, {
-                            bacnetPoint: this.pointsList[i],
+                            bacnetPoint: points[i],
                             error: error,
                         }));
                         continue
@@ -241,7 +245,6 @@ module.exports = {
             }
 
             this.eventEmitter.emit(EVENT_OUTPUT, exportPointsList);
-            this.pointsList = [];
         }
     }
 }
@@ -249,7 +252,7 @@ module.exports = {
 // ---------------------------------- functions ----------------------------------
 const readPoints = async (
     device, objects, eventEmitter, name, client, readMethod, maxConcurrentSinglePointRead,
-    concurrentTaskDelay
+    concurrentTaskDelay, getNextInvokeId
 ) => {
     const points = [];
 
@@ -270,7 +273,7 @@ const readPoints = async (
     try {
         // First request - get basic properties
         const result = await smartReadProperty(
-            client, device, reqArr, readMethod, maxConcurrentSinglePointRead, 50, concurrentTaskDelay
+            client, device, reqArr, readMethod, maxConcurrentSinglePointRead, 50, concurrentTaskDelay, getNextInvokeId
         );
 
         // Process basic properties first
@@ -291,7 +294,7 @@ const readPoints = async (
             try {
                 // Force use single read on state text to reduce loss especially long text
                 const stateTextResult = await smartReadProperty(
-                    client, device, stateTextReqArr, 0, 1, 50, concurrentTaskDelay
+                    client, device, stateTextReqArr, 0, 1, 50, concurrentTaskDelay, getNextInvokeId
                 );
 
                 // Update points with STATE_TEXT

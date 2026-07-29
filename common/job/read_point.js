@@ -9,7 +9,7 @@ const { EVENT_OUTPUT, EVENT_UPDATE_STATUS, EVENT_ERROR } = require('@root/common
 const { smartReadProperty } = require('@root/common/bacnet.js')
 const { EG_BACNET_DEVICES, EG_BACNET_POINTS } = require('@root/common/example')
 const { facetsStrToObj, errMsg, getErrMsg } = require('@root/common/func.js')
-const { concurrentTasks } = require('@root/common/core/concurrent.js')
+const { concurrentTasksWithNetworkAwareness } = require('@root/common/core/concurrent.js')
 const {
     ERR_GENERIC, ERR_SCHEMA_VALIDATION, ERR_INVALID_DATA_TYPE, ERR_DUPLICATED_DEVICE_NAME,
     ERR_DUPLICATED_POINT_ID, ERR_POINT_NOT_ATTACHED_TO_DEVICE, ERR_READING_POINT
@@ -231,15 +231,16 @@ module.exports = {
                 .filter(([_, v]) => Array.isArray(v.points) && v.points.length > 0)  // eslint-disable-line
                 .map(([k, v]) => ({
                     id: k,
-                    task: async () => {
+                    device: v.device,
+                    task: async (getNextInvokeId) => {
                         return await smartReadProperty(
                             this.client, v.device, v.points, this.readMethod,
-                            this.maxConcurrentSinglePointRead, 10, this.concurrentTaskDelay
+                            this.maxConcurrentSinglePointRead, 10, this.concurrentTaskDelay, getNextInvokeId
                         );
                     }
                 }));
 
-            await concurrentTasks(smartReadEvent, tasks, this.maxConcurrentDeviceRead);
+            await concurrentTasksWithNetworkAwareness(smartReadEvent, tasks, this.maxConcurrentDeviceRead);
 
             // format final result
             this.points.forEach(p => {

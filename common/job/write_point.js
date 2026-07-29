@@ -9,7 +9,7 @@ const { EVENT_UPDATE_STATUS, EVENT_ERROR, EVENT_OUTPUT } = require('@root/common
 const { smartWriteProperty } = require('@root/common/bacnet.js')
 const { EG_BACNET_DEVICES, EG_BACNET_POINTS, EG_BACNET_WRITE_POINTS } = require('@root/common/example')
 const { errMsg, getErrMsg } = require('@root/common/func.js')
-const { concurrentTasks } = require('@root/common/core/concurrent.js')
+const { concurrentTasksWithNetworkAwareness } = require('@root/common/core/concurrent.js')
 const {
     ERR_GENERIC, ERR_SCHEMA_VALIDATION, ERR_INVALID_DATA_TYPE, ERR_DUPLICATED_DEVICE_NAME,
     ERR_DUPLICATED_POINT_ID, ERR_POINT_NOT_ATTACHED_TO_DEVICE, ERR_WRITE_POINT_NOT_FOUND,
@@ -286,10 +286,11 @@ module.exports = {
                 .filter(([_, v]) => (void _, Object.keys(v.writePoints).length > 0))
                 .map(([k, v]) => ({
                     id: k,
-                    task: async () => {
+                    device: v.device,
+                    task: async (getNextInvokeId) => {
                         return await smartWriteProperty(
                             this.client, v.device, v.writePoints, smartWriteEvent,
-                            this.maxConcurrentPointWrite, this.concurrentTaskDelay
+                            this.maxConcurrentPointWrite, this.concurrentTaskDelay, getNextInvokeId
                         );
                     }
                 }));
@@ -310,8 +311,10 @@ module.exports = {
                 ));
             });
 
-            await concurrentTasks(smartWriteEvent, tasks, this.maxConcurrentDeviceWrite);
-        }
+            await concurrentTasksWithNetworkAwareness(smartWriteEvent, tasks, this.maxConcurrentDeviceWrite);
 
+            // emit output with write point details on completion
+            this.eventEmitter.emit(EVENT_OUTPUT, this.writePointDetails);
+        }
     }
 }

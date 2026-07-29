@@ -24,7 +24,6 @@ module.exports = function (RED) {
             this.client = RED.nodes.getNode(config.client).instance;
             this.discoverMode = +config.discoverMode
             this.readMethod = +config.readMethod
-            this.groupExportDeviceCount = +config.groupExportDeviceCount
             this.maxConcurrentDeviceRead = +config.maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = +config.maxConcurrentSinglePointRead
             this.concurrentTaskDelay = +config.concurrentTaskDelay
@@ -55,7 +54,7 @@ module.exports = function (RED) {
 
                 const task = new DiscoverPointJob(
                     this.client, this.#eventEmitter, msg?.devices, this.discoverMode, this.readMethod,
-                    this.groupExportDeviceCount, this.maxConcurrentDeviceRead,
+                    this.maxConcurrentDeviceRead,
                     this.maxConcurrentSinglePointRead, this.concurrentTaskDelay
                 );
 
@@ -77,12 +76,12 @@ module.exports = function (RED) {
             });
 
             this.#eventEmitter.on(EVENT_UPDATE_STATUS, (msg) => {
-                if (msg === 100)
+                if (msg === 'completed')
                     // @ts-ignore
                     this.status({ fill: 'green', shape: 'dot', text: `completed: ${nowFormatted()}` });
                 else
                     // @ts-ignore
-                    this.status({ fill: 'yellow', shape: 'dot', text: `progress: ${msg} %` });
+                    this.status({ fill: 'yellow', shape: 'dot', text: `${msg}` });
             });
 
             this.#eventEmitter.on(EVENT_ERROR, (err) => {

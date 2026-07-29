@@ -32,17 +32,19 @@ module.exports = {
      *      vendorId: 36,
      *      deviceName: 'BMS'
      *  }
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns array of objects
      *  eg: [{type: 12, value: {type: 8, instance: 123}, ...],
      * @async
      */
-    readObjectList: async function (client, device) {
+    readObjectList: async function (client, device, getNextInvokeId) {
         const objectId = { type: baEnum.ObjectType.DEVICE, instance: device.deviceId };
         const propertyId = baEnum.PropertyIdentifier.OBJECT_LIST;
 
-        let result = await module.exports.readPropertyMultipleReturnArr(client, device, objectId, propertyId);
+        let result = await module.exports.readPropertyMultipleReturnArr(client, device, objectId, propertyId, getNextInvokeId);
         if (result.length == 0) {
-            result = await module.exports.readPropertyReturnArr(client, device, objectId, propertyId);
+            result = await module.exports.readPropertyReturnArr(client, device, objectId, propertyId, getNextInvokeId);
         }
 
         return result;
@@ -55,10 +57,12 @@ module.exports = {
      * @param {object} device
      * @param {object} objectId
      * @param {number} propertyId
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns array of objects
      * @async
      */
-    readPropertyMultipleReturnArr: async function (client, device, objectId, propertyId) {
+    readPropertyMultipleReturnArr: async function (client, device, objectId, propertyId, getNextInvokeId) {
         let addressSet = device.ipAddress;
         if (device.macAddress != null && device.network != null) {
             addressSet = {
@@ -82,10 +86,16 @@ module.exports = {
             }];
 
             return new Promise((resolve, reject) => {
+                const options = { maxApdu: device.maxApdu };
+                // If getNextInvokeId is provided, use it to get the next invoke ID
+                if (getNextInvokeId && typeof getNextInvokeId === 'function') {
+                    options.invokeId = getNextInvokeId();
+                }
+
                 client.readPropertyMultiple(
                     addressSet,
                     reqArr,
-                    { maxApdu: device.maxApdu },
+                    options,
                     (err, value) => {
                         if (err) return reject(err);
                         resolve(value);
@@ -156,13 +166,15 @@ module.exports = {
      *  retry times for single read failed
      * @param {number} concurrentTaskDelay
      *  delay between concurrent tasks
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns array of objects
      *  eg: [{type: 12, value: {type: 8, instance: 123}, ...],
      * @async
      */
     smartReadProperty: async function (
         client, device, reqArr, readMethod = 1, maxConcurrentSinglePointRead = 5,
-        singleReadFailedRetry = 5, concurrentTaskDelay = 50
+        singleReadFailedRetry = 5, concurrentTaskDelay = 50, getNextInvokeId
     ) {
         /* reqArr example
         [{
@@ -226,7 +238,7 @@ module.exports = {
                 } while (!batchFull)
 
                 // read batch block
-                const value = await module.exports.readPropertyMultple(client, device, reqArrBatch)
+                const value = await module.exports.readPropertyMultple(client, device, reqArrBatch, getNextInvokeId)
                     .catch(() => {
                         // Reduce batch size by half (minimum 1)
                         currBatchSize = Math.max(1, Math.floor(currBatchSize / 2))
@@ -274,7 +286,7 @@ module.exports = {
                     id: `${x}-${y}`,
                     task: async () => {
                         try {
-                            let value = await module.exports.readProperty(client, device, req.objectId, prop.id);
+                            let value = await module.exports.readProperty(client, device, req.objectId, prop.id, getNextInvokeId);
 
                             if (value == null) {
                                 value = {
@@ -351,11 +363,13 @@ module.exports = {
      *  maximum concurrent point to write
      * @param {number} concurrentTaskDelay
      *  delay between concurrent tasks
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @async
      */
     smartWriteProperty: async function (
         client, device, writePoints, eventEmitter, maxConcurrentWrite,
-        concurrentTaskDelay = 50
+        concurrentTaskDelay = 50, getNextInvokeId
     ) {
         const entries = Object.entries(writePoints);
 
@@ -373,7 +387,8 @@ module.exports = {
                             { type: point.bacType, instance: point.bacInstance },
                             point.bacProp,
                             [{ type: point.valueType, value: point.value }],
-                            point.priority
+                            point.priority,
+                            getNextInvokeId
                         );
                     } catch (err) {
                         eventEmitter.emit(EVENT_ERROR, { id: id, error: getErrMsg(err) });
@@ -416,12 +431,14 @@ module.exports = {
      *  eg:{ type: 2, instance: 1 }
      * @param {number} propertyId
      *  eg: 85
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns object
      *  eg: { len: 11, objectId: { type: 19, instance: 1 },
      *      property: { id: 85, index: 4294967295 }, values: [ { type: 2, value: 3 }]}
      * @async
      */
-    readProperty: async function (client, device, objectId, propertyId) {
+    readProperty: async function (client, device, objectId, propertyId, getNextInvokeId) {
         let addressSet = device.ipAddress
         if (device.macAddress != null && device.network != null) {
             addressSet = {
@@ -432,11 +449,17 @@ module.exports = {
         }
 
         return new Promise((resolve, reject) => {
+            const options = { maxApdu: device.maxApdu };
+            // If getNextInvokeId is provided, use it to get the next invoke ID
+            if (getNextInvokeId && typeof getNextInvokeId === 'function') {
+                options.invokeId = getNextInvokeId();
+            }
+
             client.readProperty(
                 addressSet,
                 objectId,
                 propertyId,
-                { maxApdu: device.maxApdu },
+                options,
                 (err, value) => {
                     if (err)
                         reject(err);
@@ -456,11 +479,13 @@ module.exports = {
      *  eg:{ type: 2, instance: 1 }
      * @param {number} propertyId
      *  eg: 85
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns array of objects
      *  eg: [{type: 12, value: {type: 8, instance: 123}, ...],
      * @async
      */
-    readPropertyReturnArr: async function (client, device, objectId, propertyId) {
+    readPropertyReturnArr: async function (client, device, objectId, propertyId, getNextInvokeId) {
         const result = [];
 
         let addressSet = device.ipAddress
@@ -474,10 +499,16 @@ module.exports = {
 
         async function readPropertyPart(index) {
             return new Promise((resolve, reject) => {
+                const options = { maxApdu: device.maxApdu, arrayIndex: index };
+                // If getNextInvokeId is provided, use it to get the next invoke ID
+                if (getNextInvokeId && typeof getNextInvokeId === 'function') {
+                    options.invokeId = getNextInvokeId();
+                }
+
                 client.readProperty(addressSet,
                     objectId,
                     propertyId,
-                    { maxApdu: device.maxApdu, arrayIndex: index },
+                    options,
                     (err, value) => {
                         if (err) {
                             if (index === 1)
@@ -512,6 +543,8 @@ module.exports = {
      *      properties: [ { id: 85 }, ... ]
      *  },
      *  ...]
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns object
      *  eg: {"len":1937,"values":[{
      *      "objectId":{"type":3,"instance":0},
@@ -519,7 +552,7 @@ module.exports = {
      * ...}]}
      * @async
      */
-    readPropertyMultple: async function (client, device, reqArr) {
+    readPropertyMultple: async function (client, device, reqArr, getNextInvokeId) {
         let addressSet = device.ipAddress
         if (device.macAddress != null && device.network != null) {
             addressSet = {
@@ -530,10 +563,16 @@ module.exports = {
         }
 
         return new Promise((resolve, reject) => {
+            const options = { maxApdu: device.maxApdu };
+            // If getNextInvokeId is provided, use it to get the next invoke ID
+            if (getNextInvokeId && typeof getNextInvokeId === 'function') {
+                options.invokeId = getNextInvokeId();
+            }
+
             client.readPropertyMultiple(
                 addressSet,
                 reqArr,
-                { maxApdu: device.maxApdu },
+                options,
                 (err, value) => {
                     if (err)
                         reject(err);
@@ -557,10 +596,12 @@ module.exports = {
      *  eg:[{type: 2, value: 3}]
      * @param {number} priority
      *  eg: 8
+     * @param {Function} [getNextInvokeId]
+     *  optional function to get the next invoke ID
      * @returns true / undefined: true if success, else undefined
      * @async
      */
-    writeProperty: async function (client, device, objectId, propertyId, writeValue, priority) {
+    writeProperty: async function (client, device, objectId, propertyId, writeValue, priority, getNextInvokeId) {
         let addressSet = device.ipAddress
         if (device.macAddress != null && device.network != null) {
             addressSet = {
@@ -575,6 +616,10 @@ module.exports = {
             const options = {};
             if (priority !== null && priority !== undefined) {
                 options.priority = priority;
+            }
+            // If getNextInvokeId is provided, use it to get the next invoke ID
+            if (getNextInvokeId && typeof getNextInvokeId === 'function') {
+                options.invokeId = getNextInvokeId();
             }
 
             client.writeProperty(

@@ -72,6 +72,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         [undefined],
         [{ 'hello': 'world' }],
     ])('invalid device format', async (devices) => {
+        progress = null;
         error = null;
 
         const expected = {
@@ -84,13 +85,13 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            0, 1, 50,
+            0, 1,
             1, 50, 0,
         );
 
         await discoverPointJob.execute();
         // console.log(error)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
         expect(error).toStrictEqual(expected);
     }, 10000);
 
@@ -120,13 +121,13 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            0, 1, 50,
+            0, 1,
             1, 50, 0,
         );
 
         await discoverPointJob.execute();
         // console.log(error)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
         expect(error).not.toBeNull();
         // @ts-expect-error
         expect(error[`[discover point] ${ERR_SCHEMA_VALIDATION}`]).not.toBeUndefined();
@@ -158,13 +159,13 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            0, 1, 50,
+            0, 1,
             1, 50, 0,
         );
 
         await discoverPointJob.execute();
         // console.log(errorAll)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
         expect(errorAll.length).toBeGreaterThan(0)
         expect(errorAll.find(obj => obj[`[discover point] ${ERR_IGNORE_DUPLICATED_DEVICE_NAME}`])).not.toBeUndefined();
     }, 10000);
@@ -186,14 +187,14 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            0, 1, 50,
+            0, 1,
             1, 50, 0,
         );
 
         await discoverPointJob.execute();
 
         // console.log(error)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
         expect(error).not.toBeNull();
         // @ts-expect-error
         expect(error[`[discover point] Error reading ${devices[0].deviceName} points`]).not.toBeUndefined();
@@ -217,7 +218,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            0, 1, 50,
+            0, 1,
             1, 50, 0,
         );
 
@@ -250,7 +251,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // console.log(error)
         // console.log(result)
         // console.log(bacnetPoints)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
         // expect(error).toBeNull();
 
         expect(compareObj(result, filterbacnetPoints, ['priority'])).toBe(true);
@@ -274,7 +275,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            1, 1, 50,
+            1, 1,
             1, 50, 0,
         );
 
@@ -306,7 +307,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // console.log(result)
         // console.log(bacnetPoints.length)
         // console.log(filterbacnetPoints.length)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
 
         if (Array.isArray(result)) {
             // @ts-ignore
@@ -344,7 +345,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            1, 0, 50,
+            1, 0,
             50, 50, 0,
         );
 
@@ -353,7 +354,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // console.log(error)
         // console.log(result)
         // console.log(bacnetPoints)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
 
         // mode read single will fail if readProperty failure count > threshold
         // some of the properties such as unit intentionally not setup in server to fail this
@@ -370,7 +371,6 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         result = null
         resultAll = []
 
-        const groupExportDeviceCount = 1
         const maxConcurrentDeviceRead = 2
         const devices = [{
             "deviceName": 'Device1',
@@ -403,7 +403,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
 
         const discoverPointJob = new DiscoverPointJob(
             client, eventEmitter, devices,
-            1, 1, groupExportDeviceCount,
+            1, 1,
             maxConcurrentDeviceRead, 50, 0,
         );
 
@@ -435,7 +435,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // console.log(result)
         // console.log(resultAll)
         // console.log(expected)
-        expect(progress).toBe(100);
+        expect(progress).toBe('completed');
 
         if (Array.isArray(result)) {
             // @ts-ignore

@@ -7,7 +7,6 @@
             client: { type: "bacnet client", required: true },
             discoverMode: { value: 0, required: true, validate: RED.validators.number() },
             readMethod: { value: 2, required: true, validate: RED.validators.number() },
-            groupExportDeviceCount: { value: 30000, required: true, validate: RED.validators.number() },
             maxConcurrentDeviceRead: { value: 1, required: true, validate: RED.validators.number() },
             maxConcurrentSinglePointRead: { value: 10, required: true, validate: RED.validators.number() },
             concurrentTaskDelay: { value: 0, required: true, validate: RED.validators.number() },
@@ -47,10 +46,6 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-groupExportDeviceCount"><i class="fa fa-tag"></i> Group Export Device Count</label>
-        <input type="number" id="node-input-groupExportDeviceCount" placeholder="50", min="10", max="1000">
-    </div>
-    <div class="form-row">
         <label for="node-input-maxConcurrentDeviceRead"><i class="fa fa-tag"></i> Max Concurrent Device Read</label>
         <input type="number" id="node-input-maxConcurrentDeviceRead" placeholder="1" , min="1" , max="1000">
     </div>
@@ -80,9 +75,6 @@
         <dt>readMethod<span class="property-type">number</span></dt>
         <dd> <b>Read Single Only</b>: use <code>readProperty</code></dd>
         <dd> <b>Comprehensive Read</b>: try <code>readPropertyMultiple</code>, reduce query size if failed, and fallback to <code>readProperty</code> if query size reduced to 1</dd>
-
-        <dt>groupExportDeviceCount<span class="property-type">number</span></dt>
-        <dd> Emit <code>msg.payload</code> once discovered devices count reaches this limit</dd>
 
         <dt>maxConcurrentDeviceRead<span class="property-type">number</span></dt>
         <dd> Devices count to discover simultaneously.</dd>

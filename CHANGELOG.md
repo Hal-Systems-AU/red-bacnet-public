@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.2.0-alpha.1]
+### Changed
+- `ConcorrentTasksWithNetworkAwareness` added `invoke-id` generator and tracking
+- `writePoint` output `msg.payload` about writing details after completion
+- `discoverPoint` send output on every device discovery completed (even failed), removed `groupExportDeviceCount` feature
+
+## [2.2.0-alpha.0]
+### Changed
+- `ConcurrentTask` changed to `ConcorrentTasksWithNetworkAwareness` round robin distributing task according to IP address to reduce congestion on a particular network
+
 ## [2.1.1]
 ### Changed
 - Reinstated `globalBroadcastAddress` filter in transport
