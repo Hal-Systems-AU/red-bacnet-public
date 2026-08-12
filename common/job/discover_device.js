@@ -27,18 +27,20 @@ module.exports = {
          * Construct a DiscoverDeviceJob.
          * @param {BacnetClient} client - Bacnet client to use for the discovery.
          * @param {EventEmitter} eventEmitter - Status and error event emitter.
+         * @param {Object} msg - Original incoming message.
          * @param {number} network - Network to discover devices on, eg: 65535 / 1 / 1001
          * @param {number} lowLimit - Low limit of the network range.
          * @param {number} highLimit - High limit of the network range.
          * @param {number} whoIsTimeout - Who is request timeout in milliseconds.
          */
         constructor(
-            client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout,
+            client, eventEmitter, msg, network, lowLimit, highLimit, whoIsTimeout,
             name = 'discover device'
         ) {
             super();
             this.client = client
             this.eventEmitter = eventEmitter
+            this.msg = msg
             this.network = network
             this.lowLimit = lowLimit
             this.highLimit = highLimit
@@ -86,7 +88,8 @@ module.exports = {
                                 validatedDevices.push(result);
                             }
 
-                            this.eventEmitter.emit(EVENT_OUTPUT, validatedDevices);
+                            this.msg.payload = validatedDevices;
+                            this.eventEmitter.emit(EVENT_OUTPUT, this.msg);
                             this.#updateProgress(100)
                             resolve();
                         }).catch(error => {
@@ -146,8 +149,7 @@ module.exports = {
                 const deviceInfo = await readDeviceName(d, addressSet);
                 this.discoveredDevices.push(deviceInfo);
 
-                // throttle to avoid bursts
-                await delay(75); // tweak between 50–150ms
+                await delay(50);
                 this.#updateProgress(
                     Math.min(90, Math.round((80 / this.discoverList.length) * (i + 1) + 10))
                 );

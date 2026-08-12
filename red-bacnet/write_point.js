@@ -43,16 +43,6 @@ module.exports = function (RED) {
             */
             // @ts-ignore
             this.on(EVENT_INPUT, async function (msg) {
-                const task = new WritePointJob(
-                    this.client,
-                    this.#eventEmitter,
-                    msg.devices,
-                    msg.points,
-                    msg.writePoints,
-                    this.maxConcurrentDeviceWrite,
-                    this.maxConcurrentPointWrite,
-                    this.concurrentTaskDelay
-                );
                 const jobId = (typeof msg.id === 'string' || typeof msg.id === 'number') ? msg.id : this.jobId;
 
                 if (this.job.queue.map(item => item.id).includes(jobId)) {
@@ -60,6 +50,15 @@ module.exports = function (RED) {
                     print(`Coalesced job: ${jobId}`, true)
                     return;
                 }
+
+                const task = new WritePointJob(
+                    this.client,
+                    this.#eventEmitter,
+                    msg,
+                    this.maxConcurrentDeviceWrite,
+                    this.maxConcurrentPointWrite,
+                    this.concurrentTaskDelay
+                );
 
                 this.job.addJob({
                     id: jobId,
@@ -70,10 +69,7 @@ module.exports = function (RED) {
                 this.status({ fill: 'yellow', shape: 'dot', text: `in queue` });
             });
 
-            this.#eventEmitter.on(EVENT_OUTPUT, (data) => {
-                const msg = {
-                    payload: data
-                };
+            this.#eventEmitter.on(EVENT_OUTPUT, (msg) => {
                 // @ts-ignore
                 this.send(msg);
             });

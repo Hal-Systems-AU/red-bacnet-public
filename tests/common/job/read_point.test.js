@@ -87,8 +87,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         }
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 50, 0
+            client, eventEmitter, { devices, points: bacnetPoints },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -115,8 +115,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         }
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, deviceSingle,
-            points, 1, 1, 50, 0
+            client, eventEmitter, { devices: deviceSingle, points },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -150,8 +150,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         error = null;
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 50, 0
+            client, eventEmitter, { devices, points: bacnetPoints },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -187,8 +187,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         }]
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 50, 0
+            client, eventEmitter, { devices, points: bacnetPoints },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -225,8 +225,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         error = null;
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, deviceSingle,
-            points, 1, 1, 50, 0
+            client, eventEmitter, { devices: deviceSingle, points },
+            1, 1, 50, 0
         );
 
         await readPointJob.execute();
@@ -264,8 +264,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         error = null;
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, deviceSingle,
-            points, 1, 1, 50, 0
+            client, eventEmitter, { devices: deviceSingle, points },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -291,8 +291,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         }]
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, deviceSingle,
-            points, 1, 1, 50, 0
+            client, eventEmitter, { devices: deviceSingle, points },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
@@ -320,13 +320,14 @@ describe(`${ReadPointJob.name} tests`, () => {
         }]
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, devices,
-            bacnetPoints, 1, 1, 1000, 0
+            client, eventEmitter, { devices, points: bacnetPoints },
+            1, 1, 1000, 0
         );
         await readPointJob.execute();
 
         // console.log(result)
-        const errorCount = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const errorCount = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.err === ERR_READING_POINT ? count + 1 : count;
         }, 0);
 
@@ -343,17 +344,19 @@ describe(`${ReadPointJob.name} tests`, () => {
         errorAll = []
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, deviceSingle,
-            bacnetPoints, readMethod, 1, 5, 0
+            client, eventEmitter, { devices: deviceSingle, points: bacnetPoints },
+            readMethod, 1, 5, 0
         );
         await readPointJob.execute();
 
         // console.log(result)
-        const errorCount = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const errorCount = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.err === ERR_READING_POINT ? count + 1 : count;
         }, 0);
 
-        const pointAndValue = Object.entries(result).reduce((acc, [key, { value }]) => {
+        // @ts-ignore
+        const pointAndValue = Object.entries(result?.payload || {}).reduce((acc, [key, { value }]) => {
             acc[key] = value;
             return acc;
         }, {});
@@ -455,14 +458,15 @@ describe(`${ReadPointJob.name} tests`, () => {
         }
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, deviceSingle,
-            points, 1, 1, 50, 0
+            client, eventEmitter, { devices: deviceSingle, points },
+            1, 1, 50, 0
         );
         await readPointJob.execute();
 
         // console.log(result)
 
-        const errorCount = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const errorCount = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.err === ERR_READING_POINT ? count + 1 : count;
         }, 0);
 
@@ -471,7 +475,9 @@ describe(`${ReadPointJob.name} tests`, () => {
         expect(progress).toBe(100);
         expect(errorAll.length).toBe(0);
         expect(errorCount).toBe(0);
-        expect(compareObj(result, expected, [])).toBe(true);
+
+        // @ts-ignore
+        expect(compareObj(result?.payload, expected, [])).toBe(true);
     }, 10000);
 
     test('read multiple devices', async () => {
@@ -515,12 +521,13 @@ describe(`${ReadPointJob.name} tests`, () => {
         }));
 
         const readPointJob = new ReadPointJob(
-            client, eventEmitter, devices,
-            points, 1, 2, 5, 0
+            client, eventEmitter, { devices, points },
+            1, 2, 5, 0
         );
         await readPointJob.execute();
 
-        const errorCount = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const errorCount = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.err === ERR_READING_POINT ? count + 1 : count;
         }, 0);
 
@@ -529,7 +536,8 @@ describe(`${ReadPointJob.name} tests`, () => {
         expect(progress).toBe(100);
         expect(errorAll.length).toBe(0);
         expect(errorCount).toBe(0);
-        expect(Object.keys(result).length).toBe(points.length);
+        // @ts-ignore
+        expect(Object.keys(result?.payload || {}).length).toBe(points.length);
     }, 10000);
 
     // ---------------------------------- events ----------------------------------

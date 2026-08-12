@@ -45,6 +45,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
     let client = null
     let progress = 0
     let result = null
+    let device = null
     let error = null
     let resultAll = []
     let errorAll = []
@@ -83,8 +84,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             }
         }
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             0, 1,
             1, 50, 0,
         );
@@ -93,6 +95,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // console.log(error)
         expect(progress).toBe('completed');
         expect(error).toStrictEqual(expected);
+        expect(result).toStrictEqual(null);
     }, 10000);
 
     it.each([
@@ -119,8 +122,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
     ])('schema validation error', async (devices) => {
         error = null;
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             0, 1,
             1, 50, 0,
         );
@@ -131,11 +135,13 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         expect(error).not.toBeNull();
         // @ts-expect-error
         expect(error[`[discover point] ${ERR_SCHEMA_VALIDATION}`]).not.toBeUndefined();
+        expect(result).toStrictEqual(null);
     }, 10000);
 
     test('duplicate device name', async () => {
         error = null
         errorAll = []
+        device = null
 
         const devices = [{
             "deviceName": serverConfig.deviceName,
@@ -157,8 +163,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             0, 1,
             1, 50, 0,
         );
@@ -168,11 +175,13 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         expect(progress).toBe('completed');
         expect(errorAll.length).toBeGreaterThan(0)
         expect(errorAll.find(obj => obj[`[discover point] ${ERR_IGNORE_DUPLICATED_DEVICE_NAME}`])).not.toBeUndefined();
+        expect(device).toStrictEqual(devices[0]);
     }, 10000);
 
     test('discover not existant device', async () => {
         progress = null
         error = null
+        device = null
 
         const devices = [{
             "deviceName": serverConfig.deviceName,
@@ -185,8 +194,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             0, 1,
             1, 50, 0,
         );
@@ -198,12 +208,14 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         expect(error).not.toBeNull();
         // @ts-expect-error
         expect(error[`[discover point] Error reading ${devices[0].deviceName} points`]).not.toBeUndefined();
+        expect(device).toStrictEqual(devices[0]);
     }, 10000);
 
     test('discover single device basic mode', async () => {
         progress = null
         error = null
         result = null
+        device = null
 
         const devices = [{
             "deviceName": serverConfig.deviceName,
@@ -216,8 +228,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             0, 1,
             1, 50, 0,
         );
@@ -255,6 +268,7 @@ describe(`${DiscoverPointJob.name} tests`, () => {
         // expect(error).toBeNull();
 
         expect(compareObj(result, filterbacnetPoints, ['priority'])).toBe(true);
+        expect(device).toStrictEqual(devices[0]);
     }, 10000);
 
     test('discover single device full mode', async () => {
@@ -273,8 +287,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             1, 1,
             1, 50, 0,
         );
@@ -343,8 +358,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             1, 0,
             50, 50, 0,
         );
@@ -401,8 +417,9 @@ describe(`${DiscoverPointJob.name} tests`, () => {
             "vendorId": serverConfig.vendorId,
         }]
 
+        const msg = { devices };
         const discoverPointJob = new DiscoverPointJob(
-            client, eventEmitter, devices,
+            client, eventEmitter, msg,
             1, 1,
             maxConcurrentDeviceRead, 50, 0,
         );
@@ -452,10 +469,11 @@ describe(`${DiscoverPointJob.name} tests`, () => {
     }, 10000);
 
     // ---------------------------------- events ----------------------------------
-    eventEmitter.on(EVENT_OUTPUT, (data) => {
-        // console.log(`data: ${JSON.stringify(data)}`)
-        result = data
-        resultAll = [...resultAll, ...data]
+    eventEmitter.on(EVENT_OUTPUT, (msg) => {
+        // console.log(`data: ${JSON.stringify(msg)}`)
+        result = msg.payload
+        device = msg.device
+        resultAll = [...resultAll, ...msg.payload]
     });
 
     eventEmitter.on(EVENT_UPDATE_STATUS, (msg) => {

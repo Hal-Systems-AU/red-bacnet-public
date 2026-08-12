@@ -53,7 +53,7 @@ module.exports = function (RED) {
                 }
 
                 const task = new DiscoverPointJob(
-                    this.client, this.#eventEmitter, msg?.devices, this.discoverMode, this.readMethod,
+                    this.client, this.#eventEmitter, msg, this.discoverMode, this.readMethod,
                     this.maxConcurrentDeviceRead,
                     this.maxConcurrentSinglePointRead, this.concurrentTaskDelay
                 );
@@ -67,10 +67,7 @@ module.exports = function (RED) {
                 this.status({ fill: 'yellow', shape: 'dot', text: `in queue` });
             });
 
-            this.#eventEmitter.on(EVENT_OUTPUT, (data) => {
-                const msg = {
-                    payload: data
-                };
+            this.#eventEmitter.on(EVENT_OUTPUT, (msg) => {
                 // @ts-ignore
                 this.send(msg);
             });

@@ -1,10 +1,17 @@
 # Changelog
 
+## [2.2.0]
+### Changed
+- Matched v2.1.0-alpha.0 release
+- All `nodes` retained original `msg` properties
+- `writePoint` emit `payload` with failed points after completion
+
 ## [2.2.0-alpha.1]
 ### Changed
 - `ConcorrentTasksWithNetworkAwareness` added `invoke-id` generator and tracking
-- `writePoint` output `msg.payload` about writing details after completion
-- `discoverPoint` send output on every device discovery completed (even failed), removed `groupExportDeviceCount` feature
+- `writePoint` output `msg.payload` about failed write points after completion, and `msg.result` about written points statistics
+- `discoverPoint` send output on every device discovery completed ([] if failed), removed `groupExportDeviceCount` feature and add `msg.device` to output
+- refactored all nodes to retain original `msg` properties
 
 ## [2.2.0-alpha.0]
 ### Changed

@@ -3,8 +3,7 @@
 const bacnet = require('@root/ext/node-bacstack/dist/index.js');
 const EventEmitter = require('events');
 
-// @ts-expect-error
-
+// eslint-disable-next-line no-unused-vars
 const { assert, print } = require('@tests/_test_lib/util.js');
 const { describe, beforeAll, afterAll, expect, test } = require('@jest/globals');
 
@@ -49,8 +48,9 @@ describe(`${DiscoverDeviceJob.name} tests`, () => {
     });
 
     test('discover devices', async () => {
+        const msg = { network };
         const discoverDeviceJob = new DiscoverDeviceJob(
-            client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout
+            client, eventEmitter, msg, network, lowLimit, highLimit, whoIsTimeout
         );
 
         await discoverDeviceJob.onStart();
@@ -62,8 +62,8 @@ describe(`${DiscoverDeviceJob.name} tests`, () => {
     }, 10000);
 
     // ---------------------------------- events ----------------------------------
-    eventEmitter.on(EVENT_OUTPUT, (data) => {
-        result = data
+    eventEmitter.on(EVENT_OUTPUT, (msg) => {
+        result = msg.payload
     });
 
     eventEmitter.on(EVENT_UPDATE_STATUS, (msg) => {

@@ -22,14 +22,15 @@ module.exports = {
         devicePointSeparator = '.';
 
         constructor(
-            client, eventEmitter, devices, points, readMethod, maxConcurrentDeviceRead = 2,
+            client, eventEmitter, msg, readMethod, maxConcurrentDeviceRead = 2,
             maxConcurrentSinglePointRead = 5, concurrentTaskDelay = 50, name = 'read point'
         ) {
             super();
             this.client = client
             this.eventEmitter = eventEmitter
-            this.devices = devices
-            this.points = points
+            this.msg = msg
+            this.devices = msg?.devices
+            this.points = msg?.points
             this.readMethod = readMethod
             this.maxConcurrentDeviceRead = maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = maxConcurrentSinglePointRead
@@ -311,7 +312,8 @@ module.exports = {
                 exportPoints[k] = result;
             }
 
-            this.eventEmitter.emit(EVENT_OUTPUT, exportPoints);
+            this.msg.payload = exportPoints;
+            this.eventEmitter.emit(EVENT_OUTPUT, this.msg);
         }
     }
 }

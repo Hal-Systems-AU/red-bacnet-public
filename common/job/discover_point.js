@@ -55,14 +55,15 @@ module.exports = {
         devices = [];
 
         constructor(
-            client, eventEmitter, inputDevices, discoverMode, readMethod,
+            client, eventEmitter, msg, discoverMode, readMethod,
             maxConcurrentDeviceRead, maxConcurrentSinglePointRead, concurrentTaskDelay = 50,
             name = 'discover point'
         ) {
             super();
             this.client = client
             this.eventEmitter = eventEmitter
-            this.inputDevices = inputDevices
+            this.msg = msg
+            this.inputDevices = msg?.devices
             this.discoverMode = discoverMode
             this.readMethod = readMethod
             this.maxConcurrentDeviceRead = maxConcurrentDeviceRead
@@ -148,15 +149,14 @@ module.exports = {
 
             discoverPointEvent.on(EVENT_OUTPUT, (data) => {
                 count++;
-                this.#updateProgress(count, size);
-
                 // Export points immediately after each device is discovered
-                if (Array.isArray(data.result)) {
-                    this.#exportPoints(data.result);
+                if (Array.isArray(data.result?.points)) {
+                    this.#exportPoints(data.result?.points, data.result?.device);
                 } else {
                     // Export empty array if no points discovered
-                    this.#exportPoints([]);
+                    this.#exportPoints([], data.result?.device);
                 }
+                this.#updateProgress(count, size);
             });
 
             discoverPointEvent.on(EVENT_ERROR, (data) => {
@@ -172,7 +172,9 @@ module.exports = {
                         const objectList = await readObjectList(this.client, d, getNextInvokeId);
 
                         // istanbul ignore next
-                        if (objectList == null) return;
+                        if (objectList == null) {
+                            return { device: d, points: [] }
+                        }
 
                         let objectListFinal = objectList
                             .map(obj => {
@@ -205,6 +207,7 @@ module.exports = {
                         );
                     } catch (error) {
                         this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, `Error reading ${d.deviceName} points`, error));
+                        return { device: d, points: [] }
                     }
                 }
             }));
@@ -224,7 +227,7 @@ module.exports = {
             this.eventEmitter.emit(EVENT_UPDATE_STATUS, message);
         }
 
-        #exportPoints(points) {
+        #exportPoints(points, device) {
             let exportPointsList = [];
             for (let i = 0; i < points.length; i++) {
                 const { error, value: result } = bacnetPointSchema.validate(
@@ -244,7 +247,9 @@ module.exports = {
                 exportPointsList.push(result);
             }
 
-            this.eventEmitter.emit(EVENT_OUTPUT, exportPointsList);
+            this.msg.payload = exportPointsList;
+            this.msg.device = device;
+            this.eventEmitter.emit(EVENT_OUTPUT, this.msg);
         }
     }
 }
@@ -317,11 +322,10 @@ const readPoints = async (
                 ));
             }
         }
-
-        return points;
     } catch (error) {
         eventEmitter.emit(EVENT_ERROR, errMsg(name, ERR_READING_POINTS, error));
     }
+    return { device: device, points: points }
 };
 
 const updatePointWithStateText = (point, stateTextData) => {

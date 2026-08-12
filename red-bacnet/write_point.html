@@ -82,6 +82,12 @@
             <dd> Job priority in queue. Default to <code>2</code> if not provided.</dd>
         </dl>
 
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>msg.payload <span class="property-type">object</span></dt>
+        <dd>Failed to write points.</dd>
+    </dl>
+
     <h3>Details</h3>
         <p>If node is triggered while existing job is running, new job will be coalesced if <code>msg.id</code> are identical, else new job will be put in queue until current job is completed.</p>
 </script>

@@ -93,7 +93,7 @@ describe(`${WritePointJob.name} tests`, () => {
         }
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, devices, bacnetPoints, writePointsSimple, 1, 1
+            client, eventEmitter, { devices, points: bacnetPoints, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -120,7 +120,7 @@ describe(`${WritePointJob.name} tests`, () => {
         }
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, points, writePointsSimple, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -148,7 +148,7 @@ describe(`${WritePointJob.name} tests`, () => {
         }
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, bacnetPoints, writePoints, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points: bacnetPoints, writePoints }, 1, 1
         );
         await writePointJob.execute();
 
@@ -183,7 +183,7 @@ describe(`${WritePointJob.name} tests`, () => {
         error = null;
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, devices, bacnetPoints, writePointsSimple, 1, 1
+            client, eventEmitter, { devices, points: bacnetPoints, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -219,7 +219,7 @@ describe(`${WritePointJob.name} tests`, () => {
         }]
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, devices, bacnetPoints, writePointsSimple, 1, 1
+            client, eventEmitter, { devices, points: bacnetPoints, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -256,7 +256,7 @@ describe(`${WritePointJob.name} tests`, () => {
         error = null;
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, points, writePointsSimple, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -293,7 +293,7 @@ describe(`${WritePointJob.name} tests`, () => {
         error = null;
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, points, writePointsSimple, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -319,7 +319,7 @@ describe(`${WritePointJob.name} tests`, () => {
         }]
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, points, writePointsSimple, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -339,7 +339,7 @@ describe(`${WritePointJob.name} tests`, () => {
         error = null;
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, bacnetPoints, writePoints, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points: bacnetPoints, writePoints }, 1, 1
         );
         await writePointJob.execute();
 
@@ -356,7 +356,7 @@ describe(`${WritePointJob.name} tests`, () => {
         errorAll = [];
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, bacnetPoints, writePoints, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points: bacnetPoints, writePoints }, 1, 1
         );
         await writePointJob.execute();
 
@@ -378,7 +378,7 @@ describe(`${WritePointJob.name} tests`, () => {
         error = null;
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, bacnetPoints, writePoints, 1, 1
+            client, eventEmitter, { devices: deviceSingle, points: bacnetPoints, writePoints }, 1, 1
         );
         await writePointJob.execute();
 
@@ -404,7 +404,7 @@ describe(`${WritePointJob.name} tests`, () => {
         }]
 
         const writePointJob = new WritePointJob(
-            client, eventEmitter, devices, bacnetPoints, writePointsSimple, 1, 1
+            client, eventEmitter, { devices, points: bacnetPoints, writePoints: writePointsSimple }, 1, 1
         );
         await writePointJob.execute();
 
@@ -437,17 +437,18 @@ describe(`${WritePointJob.name} tests`, () => {
 
         // check before write
         result = null
-        const readPointJob = new ReadPointJob(client, eventEmitter, deviceSingle, bacnetPoints, 1, 1);
+        const readPointJob = new ReadPointJob(client, eventEmitter, { devices: deviceSingle, points: bacnetPoints }, 1, 1);
         await readPointJob.execute();
 
-        const writeCountBefore = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const writeCountBefore = Object.values(result?.payload ?? {}).reduce((count, item) => {
             return item.value === writeValue ? count + 1 : count;
         }, 0);
         expect(writeCountBefore).toBe(0);
 
         // write
         const writePointJob = new WritePointJob(
-            client, eventEmitter, deviceSingle, bacnetPoints, writePoints,
+            client, eventEmitter, { devices: deviceSingle, points: bacnetPoints, writePoints },
             1, 50, 0
         );
         await writePointJob.execute();
@@ -459,7 +460,8 @@ describe(`${WritePointJob.name} tests`, () => {
         result = null
         await readPointJob.execute();
 
-        const writeCountAfter = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const writeCountAfter = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.value === writeValue ? count + 1 : count;
         }, 0);
         expect(writeCountAfter).toBe(Object.keys(writePoints).length);
@@ -540,10 +542,11 @@ describe(`${WritePointJob.name} tests`, () => {
 
         // check before write
         result = null
-        const readPointJob = new ReadPointJob(client, eventEmitter, devicesMulti, bacnetPointsMulti, 1, 1);
+        const readPointJob = new ReadPointJob(client, eventEmitter, { devices: devicesMulti, points: bacnetPointsMulti }, 1, 1);
         await readPointJob.execute();
 
-        const writeCountBefore = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const writeCountBefore = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.value === writeValue ? count + 1 : count;
         }, 0);
         // console.log(result)
@@ -551,7 +554,7 @@ describe(`${WritePointJob.name} tests`, () => {
 
         // write
         const writePointJob = new WritePointJob(
-            client, eventEmitter, devicesMulti, bacnetPointsMulti, writePoints,
+            client, eventEmitter, { devices: devicesMulti, points: bacnetPointsMulti, writePoints },
             3, 50, 0
         );
         await writePointJob.execute();
@@ -563,7 +566,8 @@ describe(`${WritePointJob.name} tests`, () => {
         result = null
         await readPointJob.execute();
 
-        const writeCountAfter = Object.values(result).reduce((count, item) => {
+        // @ts-ignore
+        const writeCountAfter = Object.values(result?.payload || {}).reduce((count, item) => {
             return item.value === writeValue ? count + 1 : count;
         }, 0);
         expect(writeCountAfter).toBe(Object.keys(writePoints).length * 3);

@@ -20,10 +20,11 @@ const {
 module.exports = {
     WritePointJob: class WritePointJob extends BaseJob {
         writePointDetails = {}
+        failedPoints = {}
         devicePointSeparator = '.';
 
         constructor(
-            client, eventEmitter, devices, points, writePoints,
+            client, eventEmitter, msg,
             maxConcurrentDeviceWrite = 2, maxConcurrentPointWrite = 1,
             concurrentTaskDelay = 50,
             name = 'write point'
@@ -31,9 +32,10 @@ module.exports = {
             super();
             this.client = client
             this.eventEmitter = eventEmitter
-            this.devices = devices
-            this.points = points
-            this.writePoints = writePoints
+            this.msg = msg
+            this.devices = msg?.devices
+            this.points = msg?.points
+            this.writePoints = msg?.writePoints
             this.maxConcurrentDeviceWrite = maxConcurrentDeviceWrite
             this.maxConcurrentPointWrite = maxConcurrentPointWrite
             this.concurrentTaskDelay = concurrentTaskDelay
@@ -175,14 +177,7 @@ module.exports = {
                 }
 
                 // add point details
-                pointDetails[id] = {
-                    deviceName: p.deviceName,
-                    bacType: p.bacType,
-                    bacInstance: p.bacInstance,
-                    bacProp: p.bacProp,
-                    valueType: p.valueType,
-                    priority: p.priority
-                }
+                pointDetails[id] = { ...p };
             });
 
             if (pointSchemaErrList.length > 0) {
@@ -306,6 +301,7 @@ module.exports = {
             });
 
             smartWriteEvent.on(EVENT_ERROR, (data) => {
+                Object.assign(this.failedPoints, data.point);
                 this.eventEmitter.emit(EVENT_ERROR, errMsg(
                     this.name, ERR_WRITING_POINT, data
                 ));
@@ -313,8 +309,14 @@ module.exports = {
 
             await concurrentTasksWithNetworkAwareness(smartWriteEvent, tasks, this.maxConcurrentDeviceWrite);
 
-            // emit output with write point details on completion
-            this.eventEmitter.emit(EVENT_OUTPUT, this.writePointDetails);
+            // emit output with msg containing failed points and results
+            this.#exportWriteResults();
+        }
+
+        #exportWriteResults() {
+            // Update msg with results
+            this.msg.payload = this.failedPoints;
+            this.eventEmitter.emit(EVENT_OUTPUT, this.msg);
         }
     }
 }

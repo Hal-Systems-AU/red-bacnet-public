@@ -10,7 +10,20 @@ const { EVENT_ERROR, EVENT_OUTPUT } = require('@root/common/core/constant.js')
 const { concurrentTasks } = require('@root/common/core/concurrent.js')
 const { getErrMsg } = require('@root/common/func.js')
 
+// ---------------------------------- helper functions ----------------------------------
+/**
+ * Apply invoke ID to options if getNextInvokeId function is provided
+ * @param {object} options - The options object to modify
+ * @param {Function} [getNextInvokeId] - Optional function to get the next invoke ID
+ */
+function applyInvokeId(options, getNextInvokeId) {
+    if (getNextInvokeId && typeof getNextInvokeId === 'function') {
+        options.invokeId = getNextInvokeId();
+    }
+}
+
 // ---------------------------------- type def ----------------------------------
+
 /**
  * @typedef {import('@root/ext/node-bacstack/dist/index.js').Client} BacnetClient
  */
@@ -87,12 +100,10 @@ module.exports = {
 
             return new Promise((resolve, reject) => {
                 const options = { maxApdu: device.maxApdu };
-                // If getNextInvokeId is provided, use it to get the next invoke ID
-                if (getNextInvokeId && typeof getNextInvokeId === 'function') {
-                    options.invokeId = getNextInvokeId();
-                }
+                applyInvokeId(options, getNextInvokeId);
 
                 client.readPropertyMultiple(
+
                     addressSet,
                     reqArr,
                     options,
@@ -391,7 +402,12 @@ module.exports = {
                             getNextInvokeId
                         );
                     } catch (err) {
-                        eventEmitter.emit(EVENT_ERROR, { id: id, error: getErrMsg(err) });
+                        eventEmitter.emit(EVENT_ERROR, {
+                            point: {
+                                [point.id]: point.value
+                            },
+                            error: getErrMsg(err)
+                        });
                     }
                     return
                 }
@@ -450,10 +466,7 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
             const options = { maxApdu: device.maxApdu };
-            // If getNextInvokeId is provided, use it to get the next invoke ID
-            if (getNextInvokeId && typeof getNextInvokeId === 'function') {
-                options.invokeId = getNextInvokeId();
-            }
+            applyInvokeId(options, getNextInvokeId);
 
             client.readProperty(
                 addressSet,
@@ -465,7 +478,8 @@ module.exports = {
                         reject(err);
                     else
                         resolve(value);
-                });
+                }
+            );
         });
     },
 
@@ -500,12 +514,10 @@ module.exports = {
         async function readPropertyPart(index) {
             return new Promise((resolve, reject) => {
                 const options = { maxApdu: device.maxApdu, arrayIndex: index };
-                // If getNextInvokeId is provided, use it to get the next invoke ID
-                if (getNextInvokeId && typeof getNextInvokeId === 'function') {
-                    options.invokeId = getNextInvokeId();
-                }
+                applyInvokeId(options, getNextInvokeId);
 
-                client.readProperty(addressSet,
+                client.readProperty(
+                    addressSet,
                     objectId,
                     propertyId,
                     options,
@@ -524,7 +536,8 @@ module.exports = {
                                 readPropertyPart(index + 1).then(resolve).catch(reject);
                             }
                         }
-                    });
+                    }
+                );
             });
         }
 
@@ -564,10 +577,7 @@ module.exports = {
 
         return new Promise((resolve, reject) => {
             const options = { maxApdu: device.maxApdu };
-            // If getNextInvokeId is provided, use it to get the next invoke ID
-            if (getNextInvokeId && typeof getNextInvokeId === 'function') {
-                options.invokeId = getNextInvokeId();
-            }
+            applyInvokeId(options, getNextInvokeId);
 
             client.readPropertyMultiple(
                 addressSet,
@@ -578,7 +588,8 @@ module.exports = {
                         reject(err);
                     else
                         resolve(value);
-                });
+                }
+            );
         });
     },
 
@@ -617,10 +628,7 @@ module.exports = {
             if (priority !== null && priority !== undefined) {
                 options.priority = priority;
             }
-            // If getNextInvokeId is provided, use it to get the next invoke ID
-            if (getNextInvokeId && typeof getNextInvokeId === 'function') {
-                options.invokeId = getNextInvokeId();
-            }
+            applyInvokeId(options, getNextInvokeId);
 
             client.writeProperty(
                 addressSet,

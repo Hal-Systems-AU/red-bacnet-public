@@ -42,6 +42,7 @@ module.exports = function (RED) {
             this.task = new DiscoverDeviceJob(
                 this.client,
                 this.#eventEmitter,
+                null,
                 this.network,
                 this.lowLimit,
                 this.highLimit,
@@ -72,12 +73,14 @@ module.exports = function (RED) {
                 this.task.network = (msg.network === undefined) ? this.network : msg.network;
                 this.task.lowLimit = (msg.lowLimit === undefined) ? this.lowLimit : msg.lowLimit;
                 this.task.highLimit = (msg.highLimit === undefined) ? this.highLimit : msg.highLimit;
+                this.task.msg = msg;
 
                 this.job.addJob({
                     id: jobId,
                     task: this.task,
                     priority: Number.isFinite(msg.priority) ? msg.priority : 5,
                 });
+
                 // @ts-ignore
                 this.status({ fill: 'yellow', shape: 'dot', text: `in queue` });
             });
@@ -87,10 +90,7 @@ module.exports = function (RED) {
                 this.task.onStop();
             })
 
-            this.#eventEmitter.on(EVENT_OUTPUT, (data) => {
-                const msg = {
-                    payload: data
-                };
+            this.#eventEmitter.on(EVENT_OUTPUT, (msg) => {
                 // @ts-ignore
                 this.send(msg);
             });
@@ -114,4 +114,3 @@ module.exports = function (RED) {
     // ----- register node -----
     RED.nodes.registerType('discover device', DiscoverDevice);
 }
-
