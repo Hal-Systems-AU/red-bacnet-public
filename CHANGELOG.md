@@ -2,8 +2,11 @@
 
 ## [2.2.0]
 ### Changed
-- Matched v2.1.0-alpha.0 release
-- All `nodes` retained original `msg` properties
+- Matched v2.2.0-alpha.2 release
+
+## [2.2.0-alpha.2]
+### Changed
+- all `nodes` retained original `msg` properties
 - `writePoint` emit `payload` with failed points after completion
 
 ## [2.2.0-alpha.1]
