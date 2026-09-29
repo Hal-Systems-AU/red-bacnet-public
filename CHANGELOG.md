@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.1]
+### Fixed
+- Fixed unhandled promise rejections in BACnet `jobs` that could hang the job queue or crash Node-RED; errors are now reported instead.
+
 ## [2.2.0]
 ### Changed
 - Matched v2.2.0-alpha.2 release

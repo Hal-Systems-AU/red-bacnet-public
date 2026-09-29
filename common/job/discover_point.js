@@ -73,73 +73,60 @@ module.exports = {
         }
 
         async execute() {
-            this.#updateProgress('discovering')
-
-            return new Promise((resolve) => {
-                try {
-                    // validate devices
-                    if (!Array.isArray(this.inputDevices)) {
-                        this.eventEmitter.emit(EVENT_ERROR, errMsg(
-                            this.name, ERR_INVALID_DATA_TYPE,
-                            {
-                                devices: this?.inputDevices,
-                                expected: 'array',
-                                example: EG_BACNET_DEVICES
-                            })
-                        )
-                        this.#updateProgress('completed')
-                        resolve();
-                        return
-                    }
-
-                    let deviceNameSet = new Set();
-                    for (let i = 0; i < this.inputDevices.length; i++) {
-                        const device = this.inputDevices[i];
-                        const { error, value: result } = bacnetDeviceSchema.validate(
-                            device,
-                            { stripUnknown: true }
-                        );
-                        // if device id is null, set to 4194303
-                        if (result.deviceId == null)
-                            result.deviceId = 4194303;
-
-                        if (error) {
-                            this.eventEmitter.emit(EVENT_ERROR, errMsg(
-                                this.name, ERR_SCHEMA_VALIDATION, error
-                            ))
-                            continue
-                        }
-
-                        // ensure no duplicate device name
-                        if (deviceNameSet.has(result.deviceName)) {
-                            this.eventEmitter.emit(EVENT_ERROR, errMsg(
-                                this.name, ERR_IGNORE_DUPLICATED_DEVICE_NAME, result
-                            ))
-                            continue
-                        }
-                        deviceNameSet.add(result.deviceName);
-
-                        // add device to list
-                        this.devices.push(result);
-                    }
-
-                    // If no valid devices, complete immediately
-                    if (this.devices.length === 0) {
-                        this.#updateProgress('completed')
-                        resolve();
-                        return
-                    }
-
-                    // read all device points
-                    this.#readAllDevicePoints().then(() => {
-                        this.#updateProgress('completed')
-                        resolve();
-                    });
-                } catch (err) {
-                    this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)))
-                    resolve();
+            this.#updateProgress('discovering');
+            try {
+                // validate devices
+                if (!Array.isArray(this.inputDevices)) {
+                    this.eventEmitter.emit(EVENT_ERROR, errMsg(
+                        this.name, ERR_INVALID_DATA_TYPE,
+                        {
+                            devices: this?.inputDevices,
+                            expected: 'array',
+                            example: EG_BACNET_DEVICES
+                        })
+                    );
+                    return;
                 }
-            })
+
+                const deviceNameSet = new Set();
+                for (const device of this.inputDevices) {
+                    const { error, value: result } = bacnetDeviceSchema.validate(
+                        device,
+                        { stripUnknown: true }
+                    );
+
+                    if (error) {
+                        this.eventEmitter.emit(EVENT_ERROR, errMsg(
+                            this.name, ERR_SCHEMA_VALIDATION, error
+                        ));
+                        continue;
+                    }
+
+                    // if device id is null, set to 4194303
+                    if (result.deviceId == null)
+                        result.deviceId = 4194303;
+
+                    // ensure no duplicate device name
+                    if (deviceNameSet.has(result.deviceName)) {
+                        this.eventEmitter.emit(EVENT_ERROR, errMsg(
+                            this.name, ERR_IGNORE_DUPLICATED_DEVICE_NAME, result
+                        ));
+                        continue;
+                    }
+                    deviceNameSet.add(result.deviceName);
+
+                    this.devices.push(result);
+                }
+
+                // If no valid devices, nothing to do
+                if (this.devices.length === 0) return;
+
+                await this.#readAllDevicePoints();
+            } catch (err) {
+                this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)));
+            } finally {
+                this.#updateProgress('completed');
+            }
         }
 
         async #readAllDevicePoints() {

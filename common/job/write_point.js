@@ -43,27 +43,17 @@ module.exports = {
         }
 
         async execute() {
-            this.#updateProgress(0)
+            this.#updateProgress(0);
+            try {
+                if (!this.#validateData()) return;
 
-            return new Promise((resolve) => {
-                try {
-                    if (!this.#validateData()) {
-                        this.#updateProgress(100)
-                        resolve()
-                        return
-                    }
-
-                    this.#updateProgress(10)
-
-                    this.#writePoints().then(() => {
-                        this.#updateProgress(100)
-                        resolve();
-                    });
-                } catch (err) {
-                    this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)))
-                    resolve();
-                }
-            })
+                this.#updateProgress(10);
+                await this.#writePoints();
+            } catch (err) {
+                this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)));
+            } finally {
+                this.#updateProgress(100);
+            }
         }
 
         #validateData() {

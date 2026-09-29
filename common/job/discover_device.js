@@ -56,52 +56,40 @@ module.exports = {
         }
 
         async execute() {
-            // discover device job will be reuse
-            this.knownDevices.clear()
+            // discover device job will be reused
+            this.knownDevices.clear();
             this.discoverList = [];
             this.discoveredDevices = [];
 
-            this.#updateProgress(0)
+            this.#updateProgress(0);
+            try {
+                this.client.whoIs({ net: this.network, lowLimit: this.lowLimit, highLimit: this.highLimit });
 
-            return new Promise((resolve, reject) => {
-                try {
-                    this.client.whoIs({ net: this.network, lowLimit: this.lowLimit, highLimit: this.highLimit })
+                await new Promise((resolve) => setTimeout(resolve, this.whoIsTimeout));
 
-                    setTimeout(() => {
-                        this.#updateProgress(10)
+                this.#updateProgress(10);
+                await this.#readDevices();
 
-                        this.#readDevices().then(() => {
-                            let validatedDevices = [];
-                            for (let i = 0; i < this.discoveredDevices.length; i++) {
-                                const device = this.discoveredDevices[i];
-                                const { error, value: result } = bacnetDeviceSchema.validate(device);
+                const validatedDevices = [];
+                for (const device of this.discoveredDevices) {
+                    const { error, value: result } = bacnetDeviceSchema.validate(device);
 
-                                if (error) {
-                                    this.eventEmitter.emit(EVENT_ERROR, errMsg(
-                                        this.name, `BACnet device schema validation error (${device.deviceId})`, error
-                                    ))
-                                    this.eventEmitter.emit(EVENT_ERROR, errMsg(
-                                        this.name, `${ERR_SCHEMA_VALIDATION} (${device.deviceId})`, error
-                                    ))
-                                    continue;
-                                }
-                                validatedDevices.push(result);
-                            }
-
-                            this.msg.payload = validatedDevices;
-                            this.eventEmitter.emit(EVENT_OUTPUT, this.msg);
-                            this.#updateProgress(100)
-                            resolve();
-                        }).catch(error => {
-                            this.#updateProgress(100)
-                            reject(error);
-                        });
-                    }, this.whoIsTimeout);
-                } catch (err) {
-                    this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)))
-                    resolve();
+                    if (error) {
+                        this.eventEmitter.emit(EVENT_ERROR, errMsg(
+                            this.name, `${ERR_SCHEMA_VALIDATION} (${device.deviceId})`, error
+                        ));
+                        continue;
+                    }
+                    validatedDevices.push(result);
                 }
-            });
+
+                this.msg.payload = validatedDevices;
+                this.eventEmitter.emit(EVENT_OUTPUT, this.msg);
+            } catch (err) {
+                this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)));
+            } finally {
+                this.#updateProgress(100);
+            }
         }
 
         /**

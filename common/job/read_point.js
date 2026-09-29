@@ -39,28 +39,18 @@ module.exports = {
         }
 
         async execute() {
-            this.#updateProgress(0)
+            this.#updateProgress(0);
+            try {
+                if (!this.#validateData()) return;
 
-            return new Promise((resolve) => {
-                try {
-                    if (!this.#validateData()) {
-                        this.#updateProgress(100)
-                        resolve()
-                        return
-                    }
-
-                    this.#updateProgress(10)
-
-                    this.#readPoints().then(() => {
-                        this.#exportPoints();
-                        this.#updateProgress(100)
-                        resolve();
-                    });
-                } catch (err) {
-                    this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)))
-                    resolve();
-                }
-            })
+                this.#updateProgress(10);
+                await this.#readPoints();
+                this.#exportPoints();
+            } catch (err) {
+                this.eventEmitter.emit(EVENT_ERROR, errMsg(this.name, ERR_GENERIC, getErrMsg(err)));
+            } finally {
+                this.#updateProgress(100);
+            }
         }
 
         #validateData() {
@@ -284,8 +274,9 @@ module.exports = {
                 }
 
                 // add to result
+                const num = typeof value === 'number' ? value : null;
                 this.pointsList[`${p.deviceName}${this.devicePointSeparator}${p.pointName}`] = {
-                    value: facetObj.precision != null ? +value.toFixed(facetObj.precision) : value,
+                    value: (num != null && facetObj.precision != null) ? +value.toFixed(facetObj.precision) : value,
                     fvalue: fvalue,
                 }
                 if (err)
