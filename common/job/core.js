@@ -17,7 +17,7 @@ const {
  * @example
  * class MyJob extends BaseJob {
  *     async onStart() {
- *         // Initialize job resources 
+ *         // Initialize job resources
  *     }
  *
  *     async execute() {

@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.2-alpha.2]
+### Fixed
+- Fixed CICD script
+
 ## [2.2.2-alpha.1]
 ### Fixed
 - Fixed CICD script

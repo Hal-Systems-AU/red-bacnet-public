@@ -1,6 +1,6 @@
 {
   "name": "@halsystems/red-bacnet",
-  "version": "2.2.2-alpha.1",
+  "version": "2.2.2-alpha.2",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
