@@ -31,7 +31,5 @@ module.exports = {
 
     // job error
     ERR_CONSTRUCT_ABSTRACT_JOB: 'Cannot construct abstract Job class',
-    ERR_ONSTART_NOT_IMPLEMENTED: 'OnStart method is not implemented.',
-    ERR_ONSTOP_NOT_IMPLEMENTED: 'OnStop method is not implemented.',
     ERR_EXECUTE_NOT_IMPLEMENTED: 'Execute method is not implemented.',
 }

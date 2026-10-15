@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.2.2-alpha.1]
+### Fixed
+- Fixed CICD script
+
+## [2.2.2-alpha.0]
+### Added
+- `CoalescedJobQueue` added `onStart` and `onStop` hooks
+- auto sync to `red-bacnet-public` repo
+
+### Fixed
+- `discover device` fixed `#IAmHandler` memory leak issue
+- `CICD` Fixed broken pipeline due to package registry caching / propagation issue
+
 ## [2.2.1]
 ### Fixed
 - Fixed unhandled promise rejections in BACnet `jobs` that could hang the job queue or crash Node-RED; errors are now reported instead.

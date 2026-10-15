@@ -6,7 +6,7 @@ const { describe, beforeAll, afterAll, expect, it } = require('@jest/globals');
 
 const { BaseJob, CoalescedJobQueue } = require('@root/common/job/core.js');
 const {
-    ERR_ONSTART_NOT_IMPLEMENTED, ERR_ONSTOP_NOT_IMPLEMENTED, ERR_EXECUTE_NOT_IMPLEMENTED
+    ERR_EXECUTE_NOT_IMPLEMENTED
 } = require('@root/common/core/constant.js');
 const { delay } = require('@root/common/core/util.js');
 
@@ -29,10 +29,10 @@ describe('Core job tests', () => {
         const job = new Job();
 
         await expect(job.onStart())
-            .rejects.toThrow(ERR_ONSTART_NOT_IMPLEMENTED)
+            .resolves.toBeUndefined()
 
         await expect(job.onStop())
-            .rejects.toThrow(ERR_ONSTOP_NOT_IMPLEMENTED)
+            .resolves.toBeUndefined()
 
         await expect(job.execute())
             .rejects.toThrow(ERR_EXECUTE_NOT_IMPLEMENTED)

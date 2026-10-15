@@ -22,6 +22,7 @@ module.exports = {
         knownDevices = new Set();
         discoverList = [];
         discoveredDevices = [];
+        #boundIAmHandler;
 
         /**
          * Construct a DiscoverDeviceJob.
@@ -46,17 +47,17 @@ module.exports = {
             this.highLimit = highLimit
             this.whoIsTimeout = whoIsTimeout
             this.name = name
+            this.#boundIAmHandler = this.#iAmHandler.bind(this)
         }
 
         async onStart() {
-            this.client.on(EVENT_I_AM, this.#iAmHandler.bind(this))
+            this.client.on(EVENT_I_AM, this.#boundIAmHandler)
         }
         async onStop() {
-            this.client.removeListener(EVENT_I_AM, this.#iAmHandler.bind(this))
+            this.client.removeListener(EVENT_I_AM, this.#boundIAmHandler)
         }
 
         async execute() {
-            // discover device job will be reused
             this.knownDevices.clear();
             this.discoverList = [];
             this.discoveredDevices = [];

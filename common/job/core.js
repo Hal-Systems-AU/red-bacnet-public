@@ -3,8 +3,7 @@ require('./_alias.js');
 
 const { print } = require('@root/common/core/util.js');
 const {
-    ERR_CONSTRUCT_ABSTRACT_JOB, ERR_ONSTART_NOT_IMPLEMENTED,
-    ERR_ONSTOP_NOT_IMPLEMENTED, ERR_EXECUTE_NOT_IMPLEMENTED
+    ERR_CONSTRUCT_ABSTRACT_JOB, ERR_EXECUTE_NOT_IMPLEMENTED
 } = require('@root/common/core/constant.js')
 
 /**
@@ -18,7 +17,7 @@ const {
  * @example
  * class MyJob extends BaseJob {
  *     async onStart() {
- *         // Initialize job resources
+ *         // Initialize job resources 
  *     }
  *
  *     async execute() {
@@ -51,10 +50,8 @@ class BaseJob {
      *
      * @async
      * @returns {Promise<void>}
-     * @throws {Error} If not implemented by subclass.
      */
     async onStart() {
-        throw new Error(ERR_ONSTART_NOT_IMPLEMENTED);
     }
 
     /**
@@ -79,10 +76,8 @@ class BaseJob {
      *
      * @async
      * @returns {Promise<void>}
-     * @throws {Error} If not implemented by subclass.
      */
     async onStop() {
-        throw new Error(ERR_ONSTOP_NOT_IMPLEMENTED);
     }
 }
 
@@ -160,9 +155,12 @@ class CoalescedJobQueue {
 
                 const job = this.queue.splice(jobIndex, 1)[0];
                 try {
+                    await job.task.onStart();
                     await job.task.execute();
                 } catch (error) {
                     console.error(`Error executing job ${job.id}:`, error);
+                } finally {
+                    await job.task.onStop();
                 }
             }
             await new Promise(resolve => setTimeout(resolve, this.delay));

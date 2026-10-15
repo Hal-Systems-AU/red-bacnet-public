@@ -72,7 +72,7 @@ module.exports = {
     getQueue() {
         if (!globalQueue) {
             stopping = false;
-            globalQueue = new CoalescedJobQueue(100, true, 5);
+            globalQueue = new CoalescedJobQueue(50, true, 5);
         }
 
         if (!globalQueue.isRunning && !stopping) {
