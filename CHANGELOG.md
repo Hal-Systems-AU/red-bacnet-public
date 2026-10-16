@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.2-alpha.3]
+### Added
+- Option to disable `emit error` in `read point` and `write point`
+
 ## [2.2.2-alpha.2]
 ### Fixed
 - Fixed CICD script

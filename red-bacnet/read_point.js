@@ -27,6 +27,7 @@ module.exports = function (RED) {
             this.maxConcurrentDeviceRead = +config.maxConcurrentDeviceRead
             this.maxConcurrentSinglePointRead = +config.maxConcurrentSinglePointRead
             this.concurrentTaskDelay = +config.concurrentTaskDelay
+            this.emitError = config.emitError !== false // default true for backward compatibility
 
             // @ts-ignore
             this.jobId = generateUniqueJobId(this.id, 'readPoints');
@@ -86,6 +87,7 @@ module.exports = function (RED) {
             });
 
             this.#eventEmitter.on(EVENT_ERROR, (err) => {
+                if (!this.emitError) return;
                 // @ts-ignore
                 this.error(err);
             });
