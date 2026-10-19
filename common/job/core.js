@@ -25,7 +25,7 @@ const {
  *     }
  *
  *     async onStop() {
- *         // Clean up job resources
+ *         // Clean up job resources 
  *     }
  * }
  */
