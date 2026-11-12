@@ -1441,10 +1441,94 @@ const decodeCalendar = (buffer, offset, apduLen) => {
                 };
         }
     }
+    // the buffer ended exactly on an entry boundary, return what was decoded instead of undefined
+    return {
+        len: len,
+        value: entries
+    };
 };
+// ---------------------------------- schedule decoding ----------------------------------
+/**
+ * Checks whether the byte at pos is the closing tag for tagNumber.
+ * @param {Buffer} buffer
+ * @param {number} pos
+ * @param {number} tagNumber
+ * @returns {boolean}
+ */
+const isContextClosingTag = (buffer, pos, tagNumber) => {
+    return isContextSpecific(buffer[pos]) && isClosingTag(buffer[pos]) &&
+        (0, exports.decodeTagNumber)(buffer, pos).tagNumber === tagNumber;
+};
+/**
+ * Decodes one nested item of a constructed value (e.g. weekly / exception schedule).
+ * Constructed values become { tagNumber, children }, context primitives become { tagNumber, raw },
+ * application primitives are decoded with bacappDecodeApplicationData.
+ * @param {Buffer} buffer
+ * @param {number} offset
+ * @param {number} maxOffset
+ * @returns {{len: number, value: object}|undefined}
+ */
+const bacappDecodeNestedValue = (buffer, offset, maxOffset) => {
+    if (offset >= maxOffset)
+        return;
+
+    if (isContextSpecific(buffer[offset]) && isOpeningTag(buffer[offset])) {
+        const tag = (0, exports.decodeTagNumber)(buffer, offset);
+        let len = tag.len;
+        const children = [];
+        while (offset + len < maxOffset && !isContextClosingTag(buffer, offset + len, tag.tagNumber)) {
+            const child = bacappDecodeNestedValue(buffer, offset + len, maxOffset);
+            if (!child)
+                return;
+            len += child.len;
+            children.push(child.value);
+        }
+        // no matching closing tag
+        if (offset + len >= maxOffset)
+            return;
+        len += (0, exports.decodeTagNumber)(buffer, offset + len).len;
+        return { len: len, value: { tagNumber: tag.tagNumber, children: children } };
+    }
+
+    if (isContextSpecific(buffer[offset])) {
+        // stray closing tag or unexpected opening tag handling
+        if (isClosingTag(buffer[offset]))
+            return;
+        const tag = (0, exports.decodeTagNumberAndValue)(buffer, offset);
+        return {
+            len: tag.len + tag.value,
+            value: { tagNumber: tag.tagNumber, raw: buffer.toString('hex', offset + tag.len, offset + tag.len + tag.value) }
+        };
+    }
+
+    const result = (0, exports.bacappDecodeApplicationData)(buffer, offset, maxOffset, undefined, undefined);
+    if (!result)
+        return;
+    const nested = { type: result.type, value: result.value };
+    // Date / Time values are lossy as JS Date (month overflow, wildcards), keep the raw 4 bytes too
+    if ((result.type === baEnum.ApplicationTags.DATE || result.type === baEnum.ApplicationTags.TIME) && result.len === 5) {
+        nested.raw = buffer.toString('hex', offset + 1, offset + 5);
+    }
+    return { len: result.len, value: nested };
+};
+
+exports.bacappDecodeNestedValue = bacappDecodeNestedValue;
+
 const bacappDecodeContextApplicationData = (buffer, offset, maxOffset, objectType, propertyId) => {
     let len = 0;
     if (isContextSpecific(buffer[offset])) {
+        if (propertyId === baEnum.PropertyIdentifier.WEEKLY_SCHEDULE || propertyId === baEnum.PropertyIdentifier.EXCEPTION_SCHEDULE) {
+            const result = bacappDecodeNestedValue(buffer, offset, maxOffset);
+            if (!result)
+                return;
+            return {
+                type: propertyId === baEnum.PropertyIdentifier.WEEKLY_SCHEDULE
+                    ? baEnum.ApplicationTags.WEEKLY_SCHEDULE
+                    : baEnum.ApplicationTags.SPECIAL_EVENT,
+                value: result.value,
+                len: result.len
+            };
+        }
         if (propertyId === baEnum.PropertyIdentifier.LIST_OF_GROUP_MEMBERS) {
             const result = (0, exports.decodeReadAccessSpecification)(buffer, offset, maxOffset);
             if (!result)

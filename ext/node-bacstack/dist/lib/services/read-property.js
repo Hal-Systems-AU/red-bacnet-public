@@ -101,6 +101,26 @@ const decodeAcknowledge = (buffer, offset, apduLen) => {
     if (!baAsn1.decodeIsOpeningTagNumber(buffer, offset + len, 3))
         return;
     len++;
+    if (property.id === baEnum.PropertyIdentifier.WEEKLY_SCHEDULE || property.id === baEnum.PropertyIdentifier.EXCEPTION_SCHEDULE ||
+        property.id === baEnum.PropertyIdentifier.DATE_LIST || property.id === baEnum.PropertyIdentifier.EFFECTIVE_PERIOD) {
+        // schedules are nested constructed values, decode them as a whole
+        while ((apduLen - len) > 1 && !baAsn1.decodeIsClosingTagNumber(buffer, offset + len, 3)) {
+            const nested = baAsn1.bacappDecodeNestedValue(buffer, offset + len, apduLen + offset);
+            if (!nested)
+                return;
+            len += nested.len;
+            values.push(nested.value);
+        }
+        if (!baAsn1.decodeIsClosingTagNumber(buffer, offset + len, 3))
+            return;
+        len++;
+        return {
+            len: len,
+            objectId: objectId,
+            property: property,
+            values: values
+        };
+    }
     while ((apduLen - len) > 1) {
         result = baAsn1.bacappDecodeApplicationData(buffer, offset + len, apduLen + offset, objectId.type, property.id);
         if (!result)

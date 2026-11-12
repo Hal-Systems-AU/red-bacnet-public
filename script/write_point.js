@@ -14,6 +14,7 @@ const { randNum, randBool } = require('@root/common/core/util.js')
 const outputFolder = 'output'
 
 // ---------------------------------- expose ----------------------------------
+// devices.json is the discover_device output: { network, payload: [devices] }
 const devices = JSON.parse(fs.readFileSync(path.join(outputFolder, 'devices.json'), 'utf8'));
 const points = JSON.parse(fs.readFileSync(path.join(outputFolder, 'points.json'), 'utf8'));
 const maxConcurrentDeviceWrite = 2
@@ -55,8 +56,9 @@ async function main() {
     const start = performance.now();
 
     // exe
+    const msg = { devices, points, writePoints };
     const writePointJob = new WritePointJob(
-        client, eventEmitter, devices, points, writePoints,
+        client, eventEmitter, msg,
         maxConcurrentDeviceWrite, maxConcurrentPointWrite
     );
     await writePointJob.execute();

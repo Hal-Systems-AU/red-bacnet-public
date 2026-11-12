@@ -466,6 +466,16 @@ class Client extends events_1.EventEmitter {
         this._handlePdu(remoteAddress, apduType, buffer, offset, msgLength, addressObject, destAddress);
     }
     _receiveData(buffer, remoteAddress) {
+        // HAL added
+        // Truncated or malformed packets make the asn1 decoders throw (eg RangeError from readUIntBE).
+        // This runs inside a socket event handler, so an uncaught throw would crash the process.
+        try {
+            this._receiveDataUnsafe(buffer, remoteAddress);
+        } catch (err) {
+            debug('Failed to process received data -> Drop package:', err);
+        }
+    }
+    _receiveDataUnsafe(buffer, remoteAddress) {
         let srcAddress = remoteAddress
 
         // Check data length

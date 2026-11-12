@@ -35,9 +35,9 @@ const multiStateObjectTypes = [
     baEnum.ObjectType.MULTI_STATE_OUTPUT,
     baEnum.ObjectType.MULTI_STATE_VALUE
 ]
-// const scheduleObjectTypes = [
-//     baEnum.ObjectType.SCHEDULE,
-// ];
+const scheduleObjectTypes = [
+    baEnum.ObjectType.SCHEDULE,
+];
 const analogBinaryObjectTypes = [
     ...analogObjectTypes,
     ...binaryObjectTypes,
@@ -184,6 +184,8 @@ module.exports = {
                                     return obj && supportedObjectTypes.includes(obj.value.type);
                                 else if (this.discoverMode == 2) // analog and binary
                                     return obj !== null && analogBinaryObjectTypes.includes(obj.value.type);
+                                else if (this.discoverMode == 3) // schedule only
+                                    return obj !== null && scheduleObjectTypes.includes(obj.value.type);
                                 else // all
                                     return obj !== null;
                             });

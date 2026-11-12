@@ -18,12 +18,12 @@ const {
 const network = 65535;
 const lowLimit = 0
 const highLimit = 4194304
-const whoIsTimeout = 10000; // 30000
+const whoIsTimeout = 3000; // 30000
 const config = {
     apduTimeout: 6000,
     interface: '0.0.0.0',
-    port: 47808,
-    broadcastAddress: '192.168.68.255',
+    port: 47809,
+    broadcastAddress: '192.168.1.46:47808',
     // broadcastAddress: '127.0.0.255:47809',
     // broadcastAddress: '10.10.0.255',
     // broadcastAddress: '10.2.110.255',
@@ -38,14 +38,16 @@ const client = new bacnet.Client({
     broadcastAddress: config.broadcastAddress,
 });
 const outputFolder = 'output'
-const output = path.join(outputFolder, 'devices.json');
+const output = path.resolve(outputFolder, 'devices.json');
 
 // ---------------------------------- main function ----------------------------------
 async function main() {
     const start = performance.now();
 
+    // @ts-ignore
+    const msg = { network };
     const discoverDeviceJob = new DiscoverDeviceJob(
-        client, eventEmitter, network, lowLimit, highLimit, whoIsTimeout
+        client, eventEmitter, msg, network, lowLimit, highLimit, whoIsTimeout
     );
     await discoverDeviceJob.onStart();
     await discoverDeviceJob.execute();
@@ -63,11 +65,11 @@ eventEmitter.on(EVENT_OUTPUT, (data) => {
     if (!fs.existsSync(outputFolder))
         fs.mkdirSync(outputFolder);
 
-    fs.writeFile(output, JSON.stringify(data, null, 2), (err) => {
+    fs.writeFile(output, JSON.stringify(data.payload, null, 2), (err) => {
         if (err) {
             console.error('Error writing file:', err);
         } else {
-            console.log('JSON data successfully saved to file');
+            console.log(`JSON data successfully saved to file: ${output}`);
         }
     });
 });

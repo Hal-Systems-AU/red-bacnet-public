@@ -1,0 +1,493 @@
+[
+  {
+    "deviceId": 888,
+    "deviceName": "Play",
+    "pointName": "Play.BooleanSchedule",
+    "objectId": {
+      "type": 17,
+      "instance": 0
+    },
+    "presentValue": false,
+    "presentValueError": null,
+    "effectivePeriod": {
+      "start": "*-01-01",
+      "end": "*-04-02"
+    },
+    "effectivePeriodError": null,
+    "scheduleDefault": false,
+    "scheduleDefaultError": null,
+    "weeklySchedule": [
+      {
+        "day": "Monday",
+        "timeValues": [
+          {
+            "time": "12:00:00",
+            "value": true
+          },
+          {
+            "time": "18:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "timeValues": [
+          {
+            "time": "12:00:00",
+            "value": true
+          },
+          {
+            "time": "18:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "timeValues": [
+          {
+            "time": "12:00:00",
+            "value": true
+          },
+          {
+            "time": "18:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Thursday",
+        "timeValues": [
+          {
+            "time": "12:00:00",
+            "value": true
+          },
+          {
+            "time": "18:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Friday",
+        "timeValues": [
+          {
+            "time": "12:00:00",
+            "value": true
+          },
+          {
+            "time": "18:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Saturday",
+        "timeValues": [
+          {
+            "time": "18:00:00",
+            "value": true
+          }
+        ]
+      },
+      {
+        "day": "Sunday",
+        "timeValues": [
+          {
+            "time": "15:00:00",
+            "value": true
+          },
+          {
+            "time": "21:00:00",
+            "value": null
+          }
+        ]
+      }
+    ],
+    "weeklyScheduleError": null,
+    "exceptionSchedule": [
+      {
+        "period": {
+          "calendarReference": {
+            "type": 6,
+            "typeName": "CALENDAR",
+            "instance": 0,
+            "dates": [
+              {
+                "date": "2027-10-18"
+              }
+            ]
+          }
+        },
+        "timeValues": [
+          {
+            "time": "12:30:00",
+            "value": false
+          }
+        ],
+        "eventPriority": 16
+      },
+      {
+        "period": {
+          "weekNDay": {
+            "month": null,
+            "weekOfMonth": null,
+            "dayOfWeek": 7,
+            "dayName": "Sunday"
+          }
+        },
+        "timeValues": [
+          {
+            "time": "12:00:00",
+            "value": false
+          }
+        ],
+        "eventPriority": 16
+      },
+      {
+        "period": {
+          "date": "2027-07-01"
+        },
+        "timeValues": [
+          {
+            "time": "05:30:00",
+            "value": false
+          }
+        ],
+        "eventPriority": 16
+      },
+      {
+        "period": {
+          "dateRange": {
+            "start": "*-03-01",
+            "end": "*"
+          }
+        },
+        "timeValues": [
+          {
+            "time": "10:00:00",
+            "value": false
+          }
+        ],
+        "eventPriority": 16
+      }
+    ],
+    "exceptionScheduleError": null
+  },
+  {
+    "deviceId": 888,
+    "deviceName": "Play",
+    "pointName": "Play.Schedule.EnumSchedule",
+    "objectId": {
+      "type": 17,
+      "instance": 1
+    },
+    "presentValue": 0,
+    "presentValueError": null,
+    "effectivePeriod": {
+      "start": "*",
+      "end": "*"
+    },
+    "effectivePeriodError": null,
+    "scheduleDefault": 0,
+    "scheduleDefaultError": null,
+    "weeklySchedule": [
+      {
+        "day": "Monday",
+        "timeValues": [
+          {
+            "time": "09:00:00",
+            "value": 0
+          },
+          {
+            "time": "17:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "timeValues": [
+          {
+            "time": "09:00:00",
+            "value": 0
+          },
+          {
+            "time": "17:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "timeValues": [
+          {
+            "time": "09:00:00",
+            "value": 0
+          },
+          {
+            "time": "17:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Thursday",
+        "timeValues": [
+          {
+            "time": "09:00:00",
+            "value": 0
+          },
+          {
+            "time": "17:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Friday",
+        "timeValues": [
+          {
+            "time": "09:00:00",
+            "value": 2
+          },
+          {
+            "time": "17:00:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Saturday",
+        "timeValues": []
+      },
+      {
+        "day": "Sunday",
+        "timeValues": [
+          {
+            "time": "09:00:00",
+            "value": 1
+          },
+          {
+            "time": "17:00:00",
+            "value": null
+          }
+        ]
+      }
+    ],
+    "weeklyScheduleError": null,
+    "exceptionSchedule": [],
+    "exceptionScheduleError": null
+  },
+  {
+    "deviceId": 888,
+    "deviceName": "Play",
+    "pointName": "Play.Schedule.NumericSchedule",
+    "objectId": {
+      "type": 17,
+      "instance": 2
+    },
+    "presentValue": 0,
+    "presentValueError": null,
+    "effectivePeriod": {
+      "start": "*",
+      "end": "*"
+    },
+    "effectivePeriodError": null,
+    "scheduleDefault": null,
+    "scheduleDefaultError": null,
+    "weeklySchedule": [
+      {
+        "day": "Monday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": 20
+          },
+          {
+            "time": "19:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": 0
+          },
+          {
+            "time": "19:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": 0
+          },
+          {
+            "time": "19:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Thursday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": 0
+          },
+          {
+            "time": "19:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Friday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": 0
+          },
+          {
+            "time": "19:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Saturday",
+        "timeValues": []
+      },
+      {
+        "day": "Sunday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": 0
+          },
+          {
+            "time": "19:30:00",
+            "value": null
+          }
+        ]
+      }
+    ],
+    "weeklyScheduleError": null,
+    "exceptionSchedule": [],
+    "exceptionScheduleError": null
+  },
+  {
+    "deviceId": 888,
+    "deviceName": "Play",
+    "pointName": "Play.Schedule.StringSchedule",
+    "objectId": {
+      "type": 17,
+      "instance": 3
+    },
+    "presentValue": "world",
+    "presentValueError": null,
+    "effectivePeriod": {
+      "start": "*",
+      "end": "*"
+    },
+    "effectivePeriodError": null,
+    "scheduleDefault": null,
+    "scheduleDefaultError": null,
+    "weeklySchedule": [
+      {
+        "day": "Monday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": "world"
+          },
+          {
+            "time": "15:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Tuesday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": "world"
+          },
+          {
+            "time": "15:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Wednesday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": "world"
+          },
+          {
+            "time": "15:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Thursday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": "world"
+          },
+          {
+            "time": "15:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Friday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": "world"
+          },
+          {
+            "time": "15:30:00",
+            "value": null
+          }
+        ]
+      },
+      {
+        "day": "Saturday",
+        "timeValues": []
+      },
+      {
+        "day": "Sunday",
+        "timeValues": [
+          {
+            "time": "08:00:00",
+            "value": "hello"
+          },
+          {
+            "time": "15:30:00",
+            "value": null
+          }
+        ]
+      }
+    ],
+    "weeklyScheduleError": null,
+    "exceptionSchedule": [],
+    "exceptionScheduleError": null
+  }
+]

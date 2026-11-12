@@ -16,8 +16,9 @@ const {
 const outputFolder = 'output'
 
 // ---------------------------------- expose ----------------------------------
+// devices.json is the discover_device output: { network, payload: [devices] }
 const devices = JSON.parse(fs.readFileSync(path.join(outputFolder, 'devices.json'), 'utf8'));
-const points = JSON.parse(fs.readFileSync(path.join(outputFolder, 'points.json'), 'utf8'));
+const points = JSON.parse(fs.readFileSync(path.join(outputFolder, 'points_1.json'), 'utf8'));
 const readMethod = 1 // 0:single read only;1:multi read fallback single;2:2 x multi read fallback
 const maxConcurrentDeviceRead = 3
 const maxConcurrentSinglePointRead = 10
@@ -25,12 +26,12 @@ const maxConcurrentSinglePointRead = 10
 // ---------------------------------- constants ----------------------------------
 const eventEmitter = new EventEmitter();
 const config = {
-    apduTimeout: 2000, //6000,
+    apduTimeout: 3000, //6000,
     interface: '0.0.0.0',
-    port: 47808,
+    port: 47809,
     // broadcastAddress: '192.168.68.255',
     // broadcastAddress: '10.2.110.255',
-    broadcastAddress: '127.0.0.255:47809',
+    broadcastAddress: '192.168.1.46:47808',
 }
 const client = new bacnet.Client({
     apduTimeout: config.apduTimeout,
@@ -44,8 +45,9 @@ async function main() {
     const start = performance.now();
 
     // exe
+    const msg = { devices, points };
     const readPointJob = new ReadPointJob(
-        client, eventEmitter, devices, points, readMethod, maxConcurrentDeviceRead, maxConcurrentSinglePointRead
+        client, eventEmitter, msg, readMethod, maxConcurrentDeviceRead, maxConcurrentSinglePointRead
     );
     await readPointJob.execute();
 
@@ -58,12 +60,15 @@ async function main() {
 
 // ---------------------------------- events ----------------------------------
 eventEmitter.on(EVENT_OUTPUT, (data) => {
-    const output = path.join(outputFolder, 'read_points.json');
-    fs.writeFile(output, JSON.stringify(data, null, 2), (err) => {
+    if (!fs.existsSync(outputFolder))
+        fs.mkdirSync(outputFolder);
+
+    const output = path.resolve(outputFolder, 'read_points.json');
+    fs.writeFile(output, JSON.stringify(data.payload, null, 2), (err) => {
         if (err) {
             console.error('Error writing file:', err);
         } else {
-            console.log('JSON data successfully saved to file');
+            console.log(`JSON data successfully saved to file: ${output}`);
         }
     });
 });

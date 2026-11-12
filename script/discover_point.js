@@ -15,17 +15,18 @@ const {
 // ---------------------------------- expose ----------------------------------
 const groupExportDeviceCount = 50
 const maxConcurrentDeviceRead = 1
-const discoverMode = 0 // 0:basic;1:all
+const discoverMode = 1 // 0:supported;1:all;2:analog&binary only
 const readMethod = 2 // 0:single read only;1:multi read fallback single;2:2 x multi read fallback single
 const maxConcurrentSinglePointRead = 50
+const concurrentTaskDelay = 50
 
 // ---------------------------------- constants ----------------------------------
 const eventEmitter = new EventEmitter();
 const config = {
-    apduTimeout: 2000, //2000,
+    apduTimeout: 3000, //2000,
     interface: '0.0.0.0',
-    port: 47808,
-    broadcastAddress: '192.168.68.255',
+    port: 47809,
+    broadcastAddress: '192.168.1.46:47808',
     // broadcastAddress: '10.2.110.255',
     // broadcastAddress: '10.10.0.255',
     // broadcastAddress: '127.0.0.255:47809',
@@ -50,9 +51,11 @@ async function main() {
     const rawData = fs.readFileSync(devicesFilePath, 'utf8');
     const inputDevices = JSON.parse(rawData);
 
+    // devices.json is the discover_device output: { network, payload: [devices] }
+    const msg = { devices: inputDevices };
     const discoverPointJob = new DiscoverPointJob(
-        client, eventEmitter, inputDevices, discoverMode, readMethod, groupExportDeviceCount,
-        maxConcurrentDeviceRead, maxConcurrentSinglePointRead
+        client, eventEmitter, msg, discoverMode, readMethod,
+        maxConcurrentDeviceRead, maxConcurrentSinglePointRead, concurrentTaskDelay
     );
     await discoverPointJob.execute();
 
@@ -68,12 +71,12 @@ eventEmitter.on(EVENT_OUTPUT, (data) => {
     if (!fs.existsSync(outputFolder))
         fs.mkdirSync(outputFolder);
 
-    const output = path.join(outputFolder, `points_${batchCount}.json`);
-    fs.writeFile(output, JSON.stringify(data, null, 2), (err) => {
+    const output = path.resolve(outputFolder, `points_${batchCount}.json`);
+    fs.writeFile(output, JSON.stringify(data.payload, null, 2), (err) => {
         if (err) {
             console.error('Error writing file:', err);
         } else {
-            console.log('JSON data successfully saved to file');
+            console.log(`JSON data successfully saved to file: ${output}`);
         }
     });
     batchCount++

@@ -1,6 +1,6 @@
 {
   "name": "@halsystems/red-bacnet",
-  "version": "2.2.2",
+  "version": "2.3.0-alpha.0",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
@@ -32,6 +32,7 @@
       "discover device": "red-bacnet/discover_device.js",
       "discover point": "red-bacnet/discover_point.js",
       "read point": "red-bacnet/read_point.js",
+      "read schedule": "red-bacnet/read_schedule.js",
       "write point": "red-bacnet/write_point.js"
     }
   },

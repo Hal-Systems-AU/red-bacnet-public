@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.3.0-alpha.0]
+### Added
+- Added Discover and read `Schedule`
+
 ## [2.2.2]
 ### Added
 - Update production version to match 2.2.2-alpha.3 release

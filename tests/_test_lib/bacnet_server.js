@@ -49,6 +49,81 @@ const multiStateObjectTypes = [
     baEnum.ObjectType.MULTI_STATE_VALUE
 ]
 
+// ---------------------------------- schedule encoding ----------------------------------
+// The vendored encoder can't write constructed / context tagged values (weekly schedule, exception
+// schedule, date list), so those are pre-encoded as raw bytes and written as is.
+const RAW_TYPE = 'RAW_BYTES'
+const asn1 = require('@root/ext/node-bacstack/dist/lib/asn1.js')
+const originalEncodeApplicationData = asn1.bacappEncodeApplicationData
+asn1.bacappEncodeApplicationData = (buffer, value) => {
+    if (value && value.type === RAW_TYPE) {
+        value.value.copy(buffer.buffer, buffer.offset)
+        buffer.offset += value.value.length
+        return
+    }
+    return originalEncodeApplicationData(buffer, value)
+}
+
+const openTag = (n) => (n << 4) | 0x0E
+const closeTag = (n) => (n << 4) | 0x0F
+const ctxPrimitive = (n, bytes) => [(n << 4) | 0x08 | bytes.length, ...bytes]
+// date bytes: year, month, day, day of week. null = any (0xFF)
+const dateBytes = (y, m, d) => [y == null ? 0xFF : y - 1900, m ?? 0xFF, d ?? 0xFF, 0xFF]
+const appDate = (y, m, d) => [0xA4, ...dateBytes(y, m, d)]
+const appTime = (h, m, s = 0) => [0xB4, h, m, s, 0]
+const objectIdBytes = (t, instance) => {
+    const b = Buffer.alloc(4)
+    b.writeUInt32BE(((t << 22) | instance) >>> 0)
+    return [...b]
+}
+
+// application tagged values
+const val = {
+    null: () => [0x00],
+    bool: (v) => [0x10 | (v ? 1 : 0)],
+    real: (v) => {
+        const b = Buffer.alloc(4)
+        b.writeFloatBE(v)
+        return [0x44, ...b]
+    },
+    string: (v) => {
+        const b = Buffer.from(v, 'utf8')
+        const len = b.length + 1
+        return [...(len <= 4 ? [0x70 | len] : [0x75, len]), 0x00, ...b]
+    },
+}
+
+const raw = (bytes) => ({ type: RAW_TYPE, value: Buffer.from(bytes) })
+// list of [hour, minute, valueBytes]
+const timeValueBytes = (list) => list.flatMap(([h, m, v]) => [...appTime(h, m), ...v])
+
+// one weekday of the weekly schedule
+const weekDay = (list) => raw([openTag(0), ...timeValueBytes(list), closeTag(0)])
+
+// one SpecialEvent: period bytes + time values + priority
+const specialEvent = (periodBytes, list, priority) => raw([
+    ...periodBytes,
+    openTag(2), ...timeValueBytes(list), closeTag(2),
+    ...ctxPrimitive(3, [priority]),
+])
+const periodCalendarRef = (t, instance) => ctxPrimitive(1, objectIdBytes(t, instance))
+const periodDate = (y, m, d) => [openTag(0), ...ctxPrimitive(0, dateBytes(y, m, d)), closeTag(0)]
+const periodDateRange = (s, e) => [
+    openTag(0), openTag(1), ...appDate(...s), ...appDate(...e), closeTag(1), closeTag(0)
+]
+const periodWeekNDay = (month, week, dow) => [openTag(0), ...ctxPrimitive(2, [month, week, dow]), closeTag(0)]
+
+// array property, index 0 is the array size (the client reads from index 1)
+const arrayProp = (items) => [{ value: items.length, type: appTag.UNSIGNED_INTEGER }, ...items]
+
+// Monday to Friday 08:00 -> value, 17:00 -> null (relinquish), weekend empty
+const weeklyMonToFri = (v) => [
+    ...Array(5).fill(0).map(() => weekDay([[8, 0, v], [17, 0, val.null()]])),
+    weekDay([]), weekDay([]),
+]
+
+const anyDate = () => raw([...appDate(null, null, null), ...appDate(null, null, null)])
+
 // ---------------------------------- var ----------------------------------
 const dataStore = {};
 
@@ -56,6 +131,7 @@ const dataStore = {};
 async function main() {
     send('Starting BACnet server...')
     initDataStore(bacnetPoints)
+    initScheduleStore()
 
     const server = new bacnet.Client({
         deviceId: serverConfig.deviceId,
@@ -171,6 +247,98 @@ async function main() {
 
     // get length of object
     console.log(`Server started with ${Object.keys(dataStore).length} objects`);
+}
+
+const scheduleObject = (instance, name, props) => Object.assign({
+    [id.OBJECT_IDENTIFIER]: [{ value: { type: objType.SCHEDULE, instance }, type: type.LOOP }],
+    [id.OBJECT_NAME]: [{ value: name, type: type.COMMAND }],
+    [id.OBJECT_TYPE]: [{ value: objType.SCHEDULE, type: type.EVENT_ENROLLMENT }],
+}, props)
+
+/**
+ * Adds schedule and calendar objects (good and bad data) to the data store.
+ *  17:0 good - boolean schedule, weekly + every exception form (calendar ref, weekNDay, date, date range)
+ *  17:1 good - numeric schedule, unbounded effective period, no exceptions
+ *  17:2 good - string schedule, no exceptions
+ *  17:3 bad  - only present value exists, every other property is unknown
+ *  17:4 bad  - exception schedule refers to a calendar that doesn't exist
+ *  17:5 bad  - exception period uses an unknown tag, can't be decoded
+ *  6:0       - calendar referenced by 17:0
+ *  17:99     - not defined, device returns unknown object
+ */
+function initScheduleStore() {
+    const boolProp = (v) => [{ value: v, type: appTag.BOOLEAN }]
+
+    dataStore[`${objType.CALENDAR}:0`] = {
+        [id.OBJECT_IDENTIFIER]: [{ value: { type: objType.CALENDAR, instance: 0 }, type: type.LOOP }],
+        [id.OBJECT_NAME]: [{ value: 'Holidays', type: type.COMMAND }],
+        [id.OBJECT_TYPE]: [{ value: objType.CALENDAR, type: type.EVENT_ENROLLMENT }],
+        [id.PRESENT_VALUE]: boolProp(false),
+        [id.DATE_LIST]: [
+            raw(ctxPrimitive(0, dateBytes(2027, 10, 18))),
+            raw([openTag(1), ...appDate(2027, 12, 24), ...appDate(2027, 12, 26), closeTag(1)]),
+            raw(ctxPrimitive(2, [0xFF, 0xFF, 7])),
+        ],
+    }
+
+    dataStore[`${objType.SCHEDULE}:0`] = scheduleObject(0, 'Good Boolean Schedule', {
+        [id.PRESENT_VALUE]: boolProp(false),
+        [id.EFFECTIVE_PERIOD]: [raw([...appDate(2026, 1, 1), ...appDate(2026, 12, 31)])],
+        [id.SCHEDULE_DEFAULT]: boolProp(false),
+        [id.WEEKLY_SCHEDULE]: arrayProp(weeklyMonToFri(val.bool(true))),
+        [id.EXCEPTION_SCHEDULE]: arrayProp([
+            specialEvent(periodCalendarRef(objType.CALENDAR, 0), [[12, 30, val.bool(false)]], 16),
+            specialEvent(periodWeekNDay(0xFF, 0xFF, 7), [[12, 0, val.bool(false)]], 16),
+            specialEvent(periodDate(2027, 7, 1), [[5, 30, val.bool(false)]], 8),
+            specialEvent(
+                periodDateRange([2027, 3, 1], [2027, 3, 5]),
+                [[9, 0, val.bool(true)], [10, 15, val.null()]], 1
+            ),
+        ]),
+    })
+
+    dataStore[`${objType.SCHEDULE}:1`] = scheduleObject(1, 'Good Numeric Schedule', {
+        [id.PRESENT_VALUE]: [{ value: 21.5, type: appTag.REAL }],
+        [id.EFFECTIVE_PERIOD]: [anyDate()],
+        [id.SCHEDULE_DEFAULT]: [{ value: 16, type: appTag.REAL }],
+        [id.WEEKLY_SCHEDULE]: arrayProp(weeklyMonToFri(val.real(21.5))),
+        [id.EXCEPTION_SCHEDULE]: arrayProp([]),
+    })
+
+    dataStore[`${objType.SCHEDULE}:2`] = scheduleObject(2, 'Good String Schedule', {
+        [id.PRESENT_VALUE]: [{ value: 'world', type: appTag.CHARACTER_STRING }],
+        [id.EFFECTIVE_PERIOD]: [anyDate()],
+        [id.SCHEDULE_DEFAULT]: [{ value: 'idle', type: appTag.CHARACTER_STRING }],
+        [id.WEEKLY_SCHEDULE]: arrayProp([
+            weekDay([[8, 0, val.string('hello')], [15, 30, val.null()]]),
+            ...Array(6).fill(0).map(() => weekDay([])),
+        ]),
+        [id.EXCEPTION_SCHEDULE]: arrayProp([]),
+    })
+
+    dataStore[`${objType.SCHEDULE}:3`] = scheduleObject(3, 'Bad Missing Properties Schedule', {
+        [id.PRESENT_VALUE]: boolProp(true),
+    })
+
+    dataStore[`${objType.SCHEDULE}:4`] = scheduleObject(4, 'Bad Calendar Reference Schedule', {
+        [id.PRESENT_VALUE]: boolProp(false),
+        [id.EFFECTIVE_PERIOD]: [anyDate()],
+        [id.SCHEDULE_DEFAULT]: boolProp(false),
+        [id.WEEKLY_SCHEDULE]: arrayProp(weeklyMonToFri(val.bool(true))),
+        [id.EXCEPTION_SCHEDULE]: arrayProp([
+            specialEvent(periodCalendarRef(objType.CALENDAR, 99), [[12, 0, val.bool(false)]], 16),
+        ]),
+    })
+
+    dataStore[`${objType.SCHEDULE}:5`] = scheduleObject(5, 'Bad Period Schedule', {
+        [id.PRESENT_VALUE]: boolProp(false),
+        [id.EFFECTIVE_PERIOD]: [anyDate()],
+        [id.SCHEDULE_DEFAULT]: boolProp(false),
+        [id.WEEKLY_SCHEDULE]: arrayProp(weeklyMonToFri(val.bool(true))),
+        [id.EXCEPTION_SCHEDULE]: arrayProp([
+            specialEvent([openTag(0), ...ctxPrimitive(5, [1, 2, 3]), closeTag(0)], [[12, 0, val.bool(false)]], 16),
+        ]),
+    })
 }
 
 function initDataStore(data) {
