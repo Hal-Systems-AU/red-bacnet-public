@@ -35,7 +35,7 @@ const config = {
     apduTimeout: 3000,
     interface: '0.0.0.0',
     port: 47809,
-    broadcastAddress: '192.168.1.46:47808',
+    broadcastAddress: '192.168.1.255:47808',
 }
 const client = new bacnet.Client({
     apduTimeout: config.apduTimeout,
@@ -47,18 +47,22 @@ const client = new bacnet.Client({
 // ---------------------------------- decode helpers ----------------------------------
 /**
  * Decodes a raw 4-byte BACnet Date (hex string) into YYYY-MM-DD.
- * Bytes: year-1900, month (1-12), day (1-31), weekday (1-7). 0xFF means "any" and is shown as '*'.
+ * Bytes: year-1900, month (1-12), day (1-31), weekday (1-7 = Monday..Sunday). 0xFF means "any" and is shown as '*'.
+ * A specified weekday is appended, eg '2026-11-* (Sunday)'.
  * @param {string} hex
  * @returns {string}
  */
 function decodeDateHex(hex) {
     const b = Buffer.from(hex, 'hex');
-    if (b[0] === 0xFF && b[1] === 0xFF && b[2] === 0xFF) return '*';
+    // weekday 1-7 = Monday..Sunday, 0xFF (or out of range) = any, not shown
+    const weekday = DAYS[b[3] - 1];
+    const suffix = weekday ? ` (${weekday})` : '';
+    if (b[0] === 0xFF && b[1] === 0xFF && b[2] === 0xFF) return `*${suffix}`;
     const part = (v, fmt) => (v === 0xFF ? '*' : fmt(v));
     const year = b[0] === 0xFF ? '*' : String(b[0] + 1900);
     const month = part(b[1], v => String(v).padStart(2, '0'));
     const day = part(b[2], v => String(v).padStart(2, '0'));
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}${suffix}`;
 }
 
 /**
@@ -72,7 +76,7 @@ function dateFromNode(node) {
     if (!node) return null;
     if (typeof node.raw === 'string') return decodeDateHex(node.raw);
     // the vendored decodeDate maps an all-0xFF (unspecified) date to 1901-01-31T14:00Z; show it as '*'
-    if (node.value instanceof Date && node.value.getTime() === Date.UTC(1901, 0, 31, 14, 0, 0)) {
+    if (node.value instanceof Date && node.value.getTime() === new Date(1, 1, 1).getTime()) {
         return '*';
     }
     if (node.value instanceof Date && !isNaN(node.value)) {

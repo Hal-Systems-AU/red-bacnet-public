@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.3.0-alpha.1]
+### Added
+- `read_schedule` decodeDateHex added weekday decode
+
 ## [2.3.0-alpha.0]
 ### Added
 - Added Discover and read `Schedule`

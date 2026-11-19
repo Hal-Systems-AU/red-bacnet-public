@@ -27,17 +27,22 @@ const MAX_EXCEPTION_ENTRIES = 1000;
 // ---------------------------------- decode helpers ----------------------------------
 /**
  * Decodes a raw 4-byte BACnet Date (hex string) into YYYY-MM-DD. 0xFF means "any" and is shown as '*'.
+ * Bytes: year-1900, month, day, weekday (1-7 = Monday..Sunday). A specified weekday is appended,
+ * eg '* (Sunday)' or '2026-11-* (Sunday)'.
  * @param {string} hex
  * @returns {string}
  */
 const decodeDateHex = (hex) => {
     const b = Buffer.from(hex, 'hex');
-    if (b[0] === 0xFF && b[1] === 0xFF && b[2] === 0xFF) return '*';
+    // weekday 1-7 = Monday..Sunday, 0xFF (or out of range) = any, not shown
+    const weekday = DAYS[b[3] - 1];
+    const suffix = weekday ? ` (${weekday})` : '';
+    if (b[0] === 0xFF && b[1] === 0xFF && b[2] === 0xFF) return `*${suffix}`;
     const part = (v, fmt) => (v === 0xFF ? '*' : fmt(v));
     const year = b[0] === 0xFF ? '*' : String(b[0] + 1900);
     const month = part(b[1], v => String(v).padStart(2, '0'));
     const day = part(b[2], v => String(v).padStart(2, '0'));
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}${suffix}`;
 };
 
 /**
