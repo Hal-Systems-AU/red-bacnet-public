@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.3.0]
+### Added
+- Update production version to match 2.3.0-alpha.1 release
+
 ## [2.3.0-alpha.1]
 ### Added
 - `read_schedule` decodeDateHex added weekday decode
